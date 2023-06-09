@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eBlog • Home</title>
+    <link rel="stylesheet" href="css/index.css">
+    <!-- <link rel="stylesheet" href="css/menu.css"> -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight&family=Lato&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark-dimmed.min.css"
+        integrity="sha512-zcatBMvxa7rT7dDklfjauWsfiSFParF+hRfCdf4Zr40/MmA1gkFcBRbop0zMpvYF3FmznYFgcL8wlcuO/GwHoA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script defer src="js/index.js"></script>
+    <!-- <script defer src="js/menu.js"></script> -->
+    <link rel="stylesheet" href="https://erzenchat.tk/css/lightbox.css" />
+    <script defer src="https://erzenchat.tk/js/lightbox.js"></script>
+</head>
+
+
+<body>
+
+
+    <header>
+        <h1 onclick="back2()">Erzen Blog</h1>
+    </header>
+
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="https://archive.erzen.tk" target="_blank">Archive</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="search">
+        <input type="text" placeholder="Search..." id="search" onkeyup="search()">
+    </div>
+
+    <div class="searchResults" id="searchResults">
+
+    </div>
+
+    <main id="container">
+    </main>
+
+
+    <div class="loading-container" id="loading">
+        <div class="loading-circle"></div>
+    </div>
+
+    <footer id="footer" class="hidden">
+        <p>&copy; 2023 Erzen Blog. All rights reserved.</p>
+    </footer>
+
+    <textarea name="demo" id="demo" class="hidden" cols="30" rows="10"></textarea>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-app.min.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-auth.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script defer src="https://kit.fontawesome.com/f45cd9c28c.js"></script>
+
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAM5RxaJWdcImoTxEVKzshUUD8Gvvdwnt4",
+            authDomain: "blog-46883.firebaseapp.com",
+            databaseURL: "https://blog-46883-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "blog-46883",
+            storageBucket: "blog-46883.appspot.com",
+            messagingSenderId: "604907905454",
+            appId: "1:604907905454:web:f5fff79b410cca9bcd683f",
+            measurementId: "G-Z4CT90CNL8"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+
+    <button id="backButton" title="Go Back" class="hidden">&larr;</button>
+    <button id="scrollToTopButton" title="Scroll to Top">&uarr;</button>
+
+</body>
+
+</html>

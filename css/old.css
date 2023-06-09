@@ -1,0 +1,319 @@
+:root {
+    /* ===== Colors ===== */
+    --primary-color: #0E4BF1;
+    --panel-color: #FFF;
+    --text-color: #000;
+    --black-light-color: #707070;
+    --border-color: lightgrey;
+    --toggle-color: #DDD;
+    --box1-color: #4DA3FF;
+    --box2-color: #FFE6AC;
+    --box3-color: #E7D1FC;
+    --title-icon-color: #fff;
+    --input-color: white;
+    --button-color: white;
+
+    /* ====== Transition ====== */
+    --tran-05: all 0.5s ease;
+    --tran-03: all 0.3s ease;
+    --tran-03: all 0.2s ease;
+}
+
+body.dark {
+    --primary-color: #3A3B3C;
+    --panel-color: #242526;
+    --text-color: #CCC;
+    --black-light-color: #CCC;
+    --border-color: #4D4C4C;
+    --toggle-color: #FFF;
+    --box1-color: #3A3B3C;
+    --box2-color: #3A3B3C;
+    --box3-color: #3A3B3C;
+    --title-icon-color: #CCC;
+    --input-color: #3A3B3C;
+    --button-color: black;
+}
+
+/* === Custom Scroll Bar CSS === */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--li-activated-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--li-activated-color);
+}
+
+body.dark::-webkit-scrollbar-thumb:hover,
+body.dark .activity-data::-webkit-scrollbar-thumb:hover {
+    background: #3A3B3C;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+    color: var(--color);
+    z-index: 1;
+}
+
+body {
+    background-color: var(--background-color);
+}
+
+header {
+    margin-bottom: 55px;
+}
+
+.blur {
+    background-color: var(--blur-color);
+    backdrop-filter: blur(3px);
+    user-select: none;
+    border-bottom: 0.5px solid #e0e1e4;
+    box-shadow: 0px 0px 20px -20px;
+    z-index: 100;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    transition: all 0.7s ease-in-out;
+}
+
+.list-left {
+    float: left;
+}
+
+.list-right {
+    float: right;
+    cursor: pointer;
+}
+
+/* Erzen Krasniqi */
+
+li a {
+    display: block;
+    font-weight: grey;
+    color: var(--li-color);
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 100px;
+    background-color: var(--background-li);
+    transition: all 0.3s ease-in-out;
+}
+
+li a:hover:not(.active) {
+    background-color: #f2f2f2;
+    color: black;
+}
+
+.active {
+    background-color: var(--li-activated-color);
+    color: var(--li-selected-color);
+    transition: all 0.3s ease-in-out;
+}
+
+.active:hover {
+    background-color: rgba(41, 125, 151, 0.8);
+    color: whitesmoke;
+}
+
+.menu {
+    transition: all 0.25s ease-in-out 0ms;
+    position: fixed;
+    top: 100px;
+    left: 25vw;
+    right: 25vw;
+    width: 50vw;
+    background-color: var(--menu-background-color);
+    border: 1px solid grey;
+    border-radius: 10px;
+    height: 600px;
+    padding: 20px;
+
+    pointer-events: all;
+    animation-name: popup;
+    animation-duration: 0.4s;
+}
+
+@keyframes popup {
+    0% {
+        opacity: 0;
+        transform: rotate3d(1, 0.5, 0.5, 180deg) scale(0.1);
+        transition: all ease-in 0.4s;
+    }
+
+    100% {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+label {
+    width: 40vw;
+    font-size: var(--p-font-size);
+}
+
+select {
+    color: var(--select-color);
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    transition: all 0.5s ease-in-out;
+    outline: none;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: var(--p-font-size);
+}
+
+select:hover {
+    transform: scale(1.02);
+}
+
+option {
+    color: var(--select-color);
+    padding: 7px;
+}
+
+.darkmode {
+    transition: all 0.3s ease-in-out;
+}
+
+.hidden {
+    display: none;
+}
+
+::-moz-selection {
+    /* Code for Firefox */
+    color: black;
+    background: rgba(41, 125, 151, 0.4);
+}
+
+::selection {
+    color: black;
+    background: rgba(41, 125, 151, 0.4);
+}
+
+.x-h1 {
+    float: left;
+}
+
+.x-button {
+    float: right;
+    font-size: 24px;
+    color: var(--color);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out 0ms;
+}
+
+.x-button:hover {
+    color: var(--li-activated-color);
+}
+
+
+/* 
+
+        MAIN content STYLING
+
+*/
+
+.container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 50px;
+    margin-top: 100px;
+}
+
+
+.item {
+    width: 300px;
+    height: 400px;
+    min-height: 300px;
+    border: 1.5px solid var(--border-color);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .1);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.item img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.item h4 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-height: 50px;
+    font-size: var(--h1-font-size);
+}
+
+.para {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-height: 50px;
+    font-size: var(--p-font-size);
+}
+
+.item div p {
+    font-size: calc(var(--p-font-size) - 2px);
+}
+
+.item div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 7.5px;
+}
+
+.item div button {
+    padding: 3px;
+    width: 75px;
+    border-radius: 5px;
+    background-color: var(--li-activated-color);
+    border: 0.5px solid var(--li-selected-color);
+    color: var(--button-color);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.item div button:active {
+    transform: scale(0.95);
+    scale: 0.95;
+}
+
+
+.item div button:hover {
+    transform: scale(1.02);
+    scale: 1.02;
+}
+
+.controls p {
+    font-size: 12px !important;
+}
