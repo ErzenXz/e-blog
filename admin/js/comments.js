@@ -112,7 +112,7 @@ function getCommentsByPostId(postId) {
                 var commentElement = document.createElement('div');
                 commentElement.classList.add('comment');
 
-
+                console.log(commentData);
                 var commentImage = '';
                 if (commentData.image) {
                     commentImage = `<img width="35px" height="35px" src="${commentData.image}" alt="${commentData.image}">`;
@@ -142,13 +142,20 @@ function getCommentsByPostId(postId) {
 
                 var deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
-                deleteButton.addEventListener('click', function () {
-                    // Call your delete comment function here
-                    // Example: deleteComment(postId, commentId);
-                    if (confirm("Are you sure you want to delete this comment?")) {
-                        deleteComment(postId, commentId);
-                    }
-                });
+
+                deleteButton.addEventListener('click', function (postId, commentId) {
+
+                    return function () {
+                        // Open modal for editing the comment
+                        console.log('Deleting comment:', postId + "/" + commentId)
+                        if (confirm("Are you sure you want to delete this comment?")) {
+
+                            deleteComment(postId, commentId);
+                        }
+                    };
+
+                }(postId, commentId, commentData.name, commentData.comment, commentData.image));
+
 
                 buttons.appendChild(editButton);
                 buttons.appendChild(deleteButton);
