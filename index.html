@@ -6,39 +6,44 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eBlog • Home</title>
-    <link rel="stylesheet" href="css/index.css">
-    <!-- <link rel="stylesheet" href="css/menu.css"> -->
 
+    <link rel="stylesheet" href="css/index.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight&family=Lato&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark-dimmed.min.css"
         integrity="sha512-zcatBMvxa7rT7dDklfjauWsfiSFParF+hRfCdf4Zr40/MmA1gkFcBRbop0zMpvYF3FmznYFgcL8wlcuO/GwHoA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://erzenchat.tk/css/lightbox.css" />
 
-    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
 
+
+    <script src="js/user_settings.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script defer src="js/index.js"></script>
-    <!-- <script defer src="js/menu.js"></script> -->
-    <link rel="stylesheet" href="https://erzenchat.tk/css/lightbox.css" />
-    <script defer src="https://erzenchat.tk/js/lightbox.js"></script>
+    <script defer src="js/libs/lightbox.js"></script>
 </head>
 
 
 <body>
 
 
+    <div class="loading-screen" id="loadingMain">
+        <div class="loading-content">
+            <h2>Loading...</h2>
+            <p>Connecting to database</p>
+        </div>
+    </div>
+
     <header>
-        <h1 onclick="back2()">Erzen Blog</h1>
+        <h1 id="blogTitle" onclick="back2()">Erzen Blog</h1>
     </header>
 
 
-    <nav>
+    <nav id="navMain">
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="#">About</a></li>
@@ -47,7 +52,7 @@
         </ul>
     </nav>
 
-    <div class="search">
+    <div class="search" id="searchCont">
         <input type="text" placeholder="Search..." id="search" onkeyup="search()">
     </div>
 
@@ -55,8 +60,38 @@
 
     </div>
 
+    <!-- HTML structure for posts container -->
+    <div class="posts-container hidden" id="tagsC">
+        <h2 class="tag-title"></h2>
+        <div class="grid-container"></div>
+    </div>
+
+
     <main id="container">
     </main>
+
+    <div id="pages">
+        <div id="load-more">
+            <button id="load-more-btn">Load More</button>
+        </div>
+    </div>
+
+
+    <div id="ads">
+
+    </div>
+
+
+
+
+    <!-- HTML template for post - tags item -->
+    <template id="post-template">
+        <div class="post-item">
+            <div class="post-image"></div>
+            <h3 class="post-title"></h3>
+        </div>
+    </template>
+
 
 
     <div class="loading-container" id="loading">
@@ -74,7 +109,7 @@
     <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-auth.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script defer src="https://kit.fontawesome.com/f45cd9c28c.js"></script>
+    <!-- <script defer src="https://kit.fontawesome.com/f45cd9c28c.js"></script> -->
 
 
     <script>

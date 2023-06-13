@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pages</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-app.min.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-auth.min.js"></script>
+    <script defer src="../js/script.js"></script>
+    <script defer src="../js/theme.js"></script>
+    <link rel="stylesheet" href="../css/create.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <script defer src="https://kit.fontawesome.com/f45cd9c28c.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo-name">
+            <div class="logo-image">
+                <!--<img src="images/logo.png" alt="">-->
+            </div>
+
+            <span class="logo_name">Blog</span>
+        </div>
+
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="./index.html">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">Dashboard</span>
+                    </a></li>
+                <li><a href="./pages.html">
+                        <i class="uil uil-files-landscapes"></i>
+                        <span class="link-name">Posts</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-chart"></i>
+                        <span class="link-name">Analytics</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-thumbs-up"></i>
+                        <span class="link-name">Like</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-comments"></i>
+                        <span class="link-name">Comment</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-share"></i>
+                        <span class="link-name">Share</span>
+                    </a></li>
+            </ul>
+
+            <ul class="logout-mode">
+                <li><a href="#">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
+
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <!--<img src="images/profile.jpg" alt="">-->
+        </div>
+
+        <div class="dash-content">
+
+            <div class="title">
+                <i class="uil uil-plus-circle"></i>
+                <span class="text">New Post</span>
+            </div>
+
+
+            <form id="form" class="form">
+
+                <input type="text" id="title" name="title" title="Post title" placeholder="Enter title here">
+                <input type="text" id="miniTitle" name="title" title="Post mini title"
+                    placeholder="Enter mini title here">
+                <!-- <div data-tiny-editor name="post" id="post"></div> -->
+                <textarea name="post" id="post"></textarea>
+                <p id="words"></p>
+                <p id="time"></p>
+                <br>
+                <br>
+                <input type="text" id="tags" name="tags" placeholder="Tags">
+                <input type="url" id="image" name="image" placeholder="Image Link">
+                <br>
+
+            </form>
+
+            <button id="publish" onclick="addPost()">Publish</button>
+            <br><br><br>
+        </div>
+    </section>
+
+    <div class="lds-spinner hidden" id="loading">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+
+
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAM5RxaJWdcImoTxEVKzshUUD8Gvvdwnt4",
+            authDomain: "blog-46883.firebaseapp.com",
+            projectId: "blog-46883",
+            storageBucket: "blog-46883.appspot.com",
+            messagingSenderId: "604907905454",
+            appId: "1:604907905454:web:f5fff79b410cca9bcd683f",
+            measurementId: "G-Z4CT90CNL8"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+</body>
+
+</html>

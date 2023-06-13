@@ -1,16 +1,86 @@
 "use strict";
 
-// Initialize Cloud Firestore
 const db = firebase.firestore();
 const BLOGS = document.getElementById("container");
 
+let done = false;
 
 let searchIndex = [];
 let currentPost = null;
 
-db.collection("posts").orderBy("date", "desc").get().then((querySnapshot) => {
-  document.getElementById("loading").classList.add("hidden");
-  document.getElementById("footer").classList.remove("hidden");
+if (getSettingsFromFirebase) {
+
+  const settingsRef = db.collection("settings");
+
+  settingsRef.get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      // Process each document
+      const data = doc.data();
+      document.getElementById("blogTitle").innerText = data.title;
+      document.getElementById("footer").innerText = data.footer;
+      document.title = data.titleHeader;
+      document.getElementById("loadingMain").style.display = "none";
+      document.getElementById("navMain").innerHTML = data.nav;
+      document.getElementById("ads").innerHTML = data.ads;
+
+
+      let ht1 = document.createElement("div");
+      ht1.innerHTML = data.html1;
+      document.body.appendChild(ht1);
+
+      // Run scripts within the new element
+      const scripts = ht1.getElementsByTagName("script");
+      for (let i = 0; i < scripts.length; i++) {
+        eval(scripts[i].innerHTML);
+      }
+
+
+      limit = data.postsPerLoad; // limit of the number of posts to be displayed on the page
+      loadMoreText = data.loadMoreTest; // text of the "Load more" button
+      backButtonText = data.backButtonText; // text of the "Back" button
+      commentsText = data.commentsText; // text of the "Comments" button
+      recomendedText = data.recomendedText; // text of the "Recommended posts" button
+      addCommentText = data.addCommentText; // text of the "Add comment" button
+      defaultCommentName = data.defaultCommentName; // default name of the user who left the comment
+      defaultCommentAvatar = data.defaultCommentAvatar; // default avatar of the user who left the comment
+      showSearch = data.settings.showSearch; // show the search bar
+      showImage = data.settings.showImage; // show the image of the post
+      showViews = data.settings.showViews; // show the number of views of the post
+      showReadingTime = data.settings.showReadingTime; // show the reading time of the post
+      showDate = data.settings.showDate; // show the date of the post
+      showTitle = data.settings.showTitle; // show the title of the post
+      showImage2 = data.settings.showImage2; // show the image of the post
+      showViews2 = data.settings.showViews2; // show the number of views of the post
+      showReadingTime2 = data.settings.showReadingTime2; // show the reading time of the post
+      showDate2 = data.settings.showDate2; // show the date of the post
+      showDateF2 = data.settings.showDateF2; // show the date of the post in full format
+      showTags = data.settings.showTags; // show the tags of the post
+      showComments = data.settings.showComments; // show the number of comments of the post
+      allowComments = data.settings.allowComments; // allow comments on the post
+      showBackButton = data.settings.showBackButton; // show the "Back" button at the end of the post
+      showRecommendedPosts = data.settings.showRecommendedPosts; // show recommended posts at the end of the post
+      showCopyCodeButton = data.settings.showCopyCodeButton; // show the "Copy code" button at the end of the post
+
+      let urlKey = extractPostKeyFromURL(location.href);
+
+      if (urlKey != null && urlKey != undefined && urlKey != "" && urlKey != " " && urlKey != currentPost) {
+        console.log("URL key: " + urlKey);
+        getPost(urlKey);
+      }
+
+      if (showSearch == false) {
+        document.getElementById("searchCont").style.display = "none";
+      }
+
+
+
+      loadPosts();
+      done = true;
+    });
+  });
+
+} else {
+  done = true;
 
   let urlKey = extractPostKeyFromURL(location.href);
 
@@ -19,48 +89,145 @@ db.collection("posts").orderBy("date", "desc").get().then((querySnapshot) => {
     getPost(urlKey);
   }
 
-  querySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-    //console.log(doc.id, " => ", doc.data());
+  document.getElementById("loadingMain").style.display = "none";
 
-    let key = doc.id;
+  document.getElementById("blogTitle").innerText = blogTitle;
+  document.getElementById("footer").innerText = blogFooter;
+  document.title = blogHeaderTitle;
 
-    let title = doc.data().title ?? "Untitled Post";
-    let description = doc.data().description ?? "No description yet.";
-    let tags = doc.data().tags ?? "No tags";
-    let date = doc.data().date ?? "Date error";
-    let dateF = doc.data().dateF ?? "Date error";
-    let image = doc.data().image ?? "https://www.pulsecarshalton.co.uk/wp-content/uploads/2016/08/jk-placeholder-image.jpg";
+  if (showSearch == false) {
+    document.getElementById("searchCont").style.display = "none";
+  }
 
-    let mini = doc.data().titleMINI || description.split(" ").slice(0, 40).join(" ") + "...";
-    // Remove all formating from mini
+  loadPosts();
+}
 
-    mini = removeTags(mini);
-    // Remove all formating from mini
+const postsRef = db.collection("posts");
+let lastVisible = null; // Reference to the last visible document
 
-    let views = doc.data().views ?? 0;
+function loadPosts() {
+  document.getElementById("loading").classList.remove("hidden");
+  document.getElementById("footer").classList.add("hidden");
 
-    createPost(key, title, description, tags, date, dateF, image, mini, views);
+  postsRef
+    .orderBy("date", "desc")
+    .limit(Number(limit))
+    .get()
+    .then((querySnapshot) => {
+      document.getElementById("loading").classList.add("hidden");
+      document.getElementById("footer").classList.remove("hidden");
 
-    let t = description;
+      querySnapshot.forEach((doc) => {
+        let key = doc.id;
+        let title = doc.data().title ?? "Untitled Post";
+        let description = doc.data().description ?? "No description yet.";
+        let tags = doc.data().tags ?? "No tags";
+        let date = doc.data().date ?? "Date error";
+        let dateF = doc.data().dateF ?? "Date error";
+        let image =
+          doc.data().image ||
+          "https://www.pulsecarshalton.co.uk/wp-content/uploads/2016/08/jk-placeholder-image.jpg";
 
-    if (String(t).length > 5000) {
-      t = cutTextTo500Words(t);
-    }
+        let mini =
+          doc.data().titleMINI || description.split(" ").slice(0, 40).join(" ") + "...";
+        // Remove all formatting from mini
+        mini = removeTags(mini);
 
-    searchIndex.push({
-      title: title,
-      description: t,
-      tags: tags,
-      date: date,
-      views: views,
-      key: key,
-      image: image
+        let views = doc.data().views ?? 0;
+
+        // Update the last visible document
+        lastVisible = doc;
+
+        createPost(key, title, description, tags, date, dateF, image, mini, views);
+
+        let t = description;
+        if (String(t).length > 5000) {
+          t = cutTextTo500Words(t);
+        }
+
+        searchIndex.push({
+          title: title,
+          description: t,
+          tags: tags,
+          date: date,
+          views: views,
+          key: key,
+          image: image,
+        });
+      });
+
+      if (querySnapshot.size < limit) {
+        // All posts have been loaded
+        document.getElementById("load-more").classList.add("hidden");
+      } else {
+        document.getElementById("load-more").classList.remove("hidden");
+      }
     });
+}
 
+function loadMorePosts() {
+  document.getElementById("loading").classList.remove("hidden");
+  document.getElementById("footer").classList.add("hidden");
 
-  });
-});
+  postsRef
+    .orderBy("date", "desc")
+    .startAfter(lastVisible) // Start after the last visible document
+    .limit(limit)
+    .get()
+    .then((querySnapshot) => {
+      document.getElementById("loading").classList.add("hidden");
+      document.getElementById("footer").classList.remove("hidden");
+
+      querySnapshot.forEach((doc) => {
+
+        let key = doc.id;
+
+        let title = doc.data().title ?? "Untitled Post";
+        let description = doc.data().description ?? "No description yet.";
+        let tags = doc.data().tags ?? "No tags";
+        let date = doc.data().date ?? "Date error";
+        let dateF = doc.data().dateF ?? "Date error";
+        let image =
+          doc.data().image ||
+          "https://www.pulsecarshalton.co.uk/wp-content/uploads/2016/08/jk-placeholder-image.jpg";
+
+        let mini =
+          doc.data().titleMINI || description.split(" ").slice(0, 40).join(" ") + "...";
+        // Remove all formatting from mini
+        mini = removeTags(mini);
+
+        let views = doc.data().views ?? 0;
+
+        // Update the last visible document
+        lastVisible = doc;
+
+        createPost(key, title, description, tags, date, dateF, image, mini, views);
+
+        let t = description;
+        if (String(t).length > 5000) {
+          t = cutTextTo500Words(t);
+        }
+
+        searchIndex.push({
+          title: title,
+          description: t,
+          tags: tags,
+          date: date,
+          views: views,
+          key: key,
+          image: image,
+        });
+      });
+
+      if (querySnapshot.size < limit) {
+        // All posts have been loaded
+        document.getElementById("load-more").classList.add("hidden");
+      }
+    });
+}
+
+document.getElementById("load-more").addEventListener("click", loadMorePosts);
+
 
 function cutTextTo500Words(text) {
   const words = text.trim().split(/\s+/);
@@ -68,7 +235,6 @@ function cutTextTo500Words(text) {
   const cutText = cutWords.join(' ');
   return cutText;
 }
-
 
 function createPost(key, title, description, tags, date, dateF, image, mini, views) {
   let div = document.createElement("div");
@@ -95,19 +261,42 @@ function createPost(key, title, description, tags, date, dateF, image, mini, vie
     day: '2-digit'
   }).format(date);
 
+
+  let imageA = ``;
+  let viewsA = ``;
+  let timeA = ``;
+  let dateA = ``;
+
+  if (showImage) {
+    imageA = `<a href="${image}" data-lightbox="image-1" data-title="${title}"><img class="img0" src="${image}" loading="lazy"></a>`;
+  }
+
+  if (showViews) {
+    viewsA = `<span>Views: ${views}</span>`;
+  }
+
+  if (showReadingTime) {
+    timeA = `<span>Time to read: ${calculateReadingTime(descriptionA)}</span>`;
+  }
+
+  if (showDate) {
+    dateA = `<span>${dateF2}</span>`;
+  }
+
+
   div.innerHTML = `
     <article>
       <div class="art-head">
-        <a href="${image}" data-lightbox="image-1" data-title="${title}"><img class="img0" src="${image}" loading="lazy"></a>
+      ${imageA}
       </div>
       
       <div class="article main">
         <h2>${titleA}</h2>
         <p>${mini}</p>
         <div class="article-footer">
-          <span>Views: ${views}</span>
-          <span>Time to read: ${calculateReadingTime(descriptionA)}</span>
-          <span>${dateF2}</span>
+          ${viewsA}
+          ${timeA}
+          ${dateA}
         </div>
       </div>
     </article>
@@ -126,7 +315,7 @@ function createPost(key, title, description, tags, date, dateF, image, mini, vie
     `getPost("${key}")`
   );
 
-  button.textContent = "Read more";
+  button.textContent = loadMoreText;
 
   div.querySelector(".article-footer").appendChild(button);
 
@@ -272,6 +461,8 @@ function viewPost(post) {
   let image = post.image;
   let views = post.views;
 
+  document.title = title;
+
   document.getElementById("demo").value = description;
 
   let tagsA = String(tags);
@@ -298,26 +489,64 @@ function viewPost(post) {
   div.setAttributeNode(att1);
   div.setAttributeNode(att2);
 
+  let imageA = ``;
+  let titleA = ``;
+
+  let viewsA = ``;
+  let dateA = ``;
+  let tagsA2 = ``;
+  let timetoReadA = ``;
+  let dateF2A = ``;
+
+  if (showImage2) {
+    imageA = `<a href="${image}" data-lightbox="image-1" data-title="${title}"><img class="img" src="${image}" loading="lazy"></a>`;
+  }
+
+  if (showTitle) {
+    titleA = `<h2>${title}</h2>`;
+  }
+
+  if (showViews2) {
+    viewsA = `<span>Views: ${Number(views) + 1}</span>`;
+  }
+
+  if (showDate2) {
+    dateA = `<span>${time_ago(Number(date))}</span>`;
+  }
+
+  if (showTags) {
+    tagsA2 = `<div class="tags">
+    ${tagsA.split(",").map(tag => `<a href="${location.origin + "?tag=" + tag}">${tag}</a>`).join("")} </div>`;
+  }
+
+  if (showReadingTime2) {
+    timetoReadA = `<span>Time to read: ${calculateReadingTime(description)}</span>`;
+  }
+
+  if (showDateF2) {
+    dateF2A = `<span>${dateF2}</span>`;
+  }
+
+
+
+
   div.innerHTML = `
     <article class="two" style="flex-direction: column" id="${'article-' + key}">
     <div class="art">
 
       <div class="art-head">
-      <a href="${image}" data-lightbox="image-1" data-title="${title}"><img class="img" src="${image}" loading="lazy"></a>
-        
+      ${imageA}
       </div>
 
         <div class="article">
-          <h2>${title}</h2>
+          ${titleA}
           <div class="article-footer">
-              <span>Views: ${Number(views) + 1}</span>
-              <span>${time_ago(Number(date))}</span>
-              <span>Time to read: ${calculateReadingTime(description)}</span>
-              <span>${dateF2}</span>
+              ${viewsA}
+              ${dateA}
+              ${timetoReadA}
+              ${dateF2A}
 
-              <div class="tags">
-                  ${tagsA.split(",").map(tag => `<a href="${location.href + "?tag=" + tag}">${tag}</a>`).join("")}
-              </div>
+              ${tagsA2}
           </div>
         </div>
     </div>
@@ -359,11 +588,15 @@ function viewPost(post) {
 
   // Back button
 
-  let backButton = document.createElement("button");
-  backButton.innerHTML = "Back";
-  backButton.setAttribute("class", "button");
-  backButton.setAttribute("onclick", "back()");
-  BLOGS.appendChild(backButton);
+  if (showBackButton) {
+    let backButton = document.createElement("button");
+    backButton.innerHTML = backButtonText;
+    backButton.setAttribute("class", "button");
+    backButton.setAttribute("onclick", "back()");
+    BLOGS.appendChild(backButton);
+  }
+
+
 
   // // Edit button
 
@@ -383,23 +616,23 @@ function viewPost(post) {
 
   // Comments
 
-  let comments = document.createElement("div");
-  let h3 = document.createElement("h2");
-  h3.innerHTML = "Comments";
+  if (showComments) {
+    let comments = document.createElement("div");
+    let h3 = document.createElement("h2");
+    h3.innerHTML = commentsText;
 
-  BLOGS.appendChild(h3);
+    BLOGS.appendChild(h3);
 
-  comments.setAttribute("id", "comments");
-  BLOGS.appendChild(comments);
+    comments.setAttribute("id", "comments");
+    BLOGS.appendChild(comments);
+    // Get comments
 
-  // Get comments
-
-  let commentsRef = firebase.database().ref(`comments/${key}`);
-  commentsRef.on("child_added", function (snapshot) {
-    let comment = snapshot.val();
-    let div = document.createElement("div");
-    div.setAttribute("class", "comment");
-    div.innerHTML = `
+    let commentsRef = firebase.database().ref(`comments/${key}`);
+    commentsRef.on("child_added", function (snapshot) {
+      let comment = snapshot.val();
+      let div = document.createElement("div");
+      div.setAttribute("class", "comment");
+      div.innerHTML = `
       <div class="comment-head">
         <img src="${comment.image}" alt="${comment.name}" loading="lazy">
         <span>${comment.name}</span>
@@ -408,22 +641,31 @@ function viewPost(post) {
         <p>${removeTags(comment.comment)}</p>
       </div>
     `
-    comments.appendChild(div);
+      comments.appendChild(div);
+    }
+    );
+
   }
-  );
 
-  addComment(key);
 
-  // Add copy buttons to code blocks
-  const codeBlocks = document.querySelectorAll('pre code');
-  codeBlocks.forEach((codeBlock) => {
-    const copyButton = document.createElement('button');
-    copyButton.className = 'copy-button';
-    copyButton.textContent = 'Copy';
-    copyButton.addEventListener('click', () => copyCode(codeBlock));
+  if (allowComments) {
+    addComment(key);
+  }
 
-    codeBlock.parentNode.insertBefore(copyButton, codeBlock.nextSibling);
-  });
+  if (showCopyCodeButton) {
+    // Add copy buttons to code blocks
+    const codeBlocks = document.querySelectorAll('pre code');
+    codeBlocks.forEach((codeBlock) => {
+      const copyButton = document.createElement('button');
+      copyButton.className = 'copy-button';
+      copyButton.textContent = 'Copy';
+      copyButton.addEventListener('click', () => copyCode(codeBlock));
+
+      codeBlock.parentNode.insertBefore(copyButton, codeBlock.nextSibling);
+    });
+  }
+
+
 
   // Function to copy code to the clipboard
   function copyCode(codeBlock) {
@@ -446,59 +688,60 @@ function viewPost(post) {
 
   // Recomended posts
 
-  let recomended = document.createElement("div");
-  recomended.setAttribute("class", "recomended");
-  recomended.innerHTML = `
-  <br>
-    <h2>Recomended Posts</h2>
-    <div class="recomended-posts" id="recomendet">
-    </div>
-  `;
-  BLOGS.appendChild(recomended);
-
-  let currentPost = {
-    title: title,
-    description: description,
-    tags: tags,
-    views: views
-  };
-
-  let recomendedPosts = findRecommendedPosts(currentPost, searchIndex, 5);
-
-  recomendedPosts.forEach(post => {
-    if (post.title === currentPost.title) return;
-    let div = document.createElement("div");
-    div.setAttribute("class", "recomended-post");
-    div.innerHTML = `
-      <h4>${post.title}</h4>
-      <img src="${post.image}" alt="${post.title}" width="200px" height="auto" loading="lazy">
-      <button onclick='getPost("${post.key}")'>View</button>
+  if (showRecommendedPosts) {
+    let recomended = document.createElement("div");
+    recomended.setAttribute("class", "recomended");
+    recomended.innerHTML = `
+    <br>
+      <h2>${recomendedText}</h2>
+      <div class="recomended-posts" id="recomendet">
+      </div>
     `;
-    document.getElementById("recomendet").appendChild(div);
+    BLOGS.appendChild(recomended);
+    let currentPost = {
+      title: title,
+      description: description,
+      tags: tags,
+      views: views
+    };
+
+    let recomendedPosts = findRecommendedPosts(currentPost, searchIndex, 5);
+
+    recomendedPosts.forEach(post => {
+      if (post.title === currentPost.title) return;
+      let div = document.createElement("div");
+      div.setAttribute("class", "recomended-post");
+      div.innerHTML = `
+        <h4>${post.title}</h4>
+        <img src="${post.image}" alt="${post.title}" width="200px" height="auto" loading="lazy">
+        <button onclick='getPost("${post.key}")'>View</button>
+      `;
+      document.getElementById("recomendet").appendChild(div);
+    }
+    );
   }
-  );
-
-
 
 }
 
 function back() {
-  window.location.reload();
+  back2();
 }
 
 // Function to add a view to a post using firebase firestore
 
 function addView(key) {
   let blogRef = firebase.firestore().collection("posts").doc(key);
-  blogRef.get().then(function (doc) {
-    if (doc.exists) {
-      let views = doc.data().views;
-      views++;
-      blogRef.update({
-        views: views
-      })
-    }
+
+  // Use Firestore's FieldValue.increment() to atomically increment the value
+  blogRef.update({
+    views: firebase.firestore.FieldValue.increment(1)
   })
+    .then(function () {
+      console.log("View count incremented successfully!");
+    })
+    .catch(function (error) {
+      console.error("Error incrementing view count: ", error);
+    });
 }
 
 // Function to add a comment to a post using firebase firestore
@@ -507,7 +750,7 @@ function addComment(key) {
   let div = document.createElement("div");
   div.setAttribute("class", "comment-form");
   div.innerHTML = `
-    <h3>Add comment</h3>
+    <h3>${addCommentText}</h3>
     <input type="text" id="name" placeholder="Name">
     <input type="text" id="image" placeholder="Image URL">
     <textarea id="comment" placeholder="Message" rows="5"></textarea>
@@ -519,8 +762,8 @@ function addComment(key) {
 // Add the comment to the database
 
 function postComment(key) {
-  let name = document.getElementById("name").value || "Anonymous";
-  let image = document.getElementById("image").value || "https://www.w3schools.com/howto/img_avatar.png";
+  let name = document.getElementById("name").value || defaultCommentName;
+  let image = document.getElementById("image").value || defaultCommentAvatar;
   let comment = String(document.getElementById("comment").value);
 
   comment = String(comment);
@@ -675,6 +918,7 @@ function getPost(key) {
     if (doc.exists) {
       let post = doc.data();
       post.key = key;
+      document.getElementById("tagsC").classList.add("hidden");
       viewPost(post);
       document.getElementById("loading").classList.add("hidden");
       document.getElementById("footer").classList.remove("hidden");
@@ -865,21 +1109,13 @@ function handlePopstate(event) {
 
   if (state && state.post) {
     // Load the post based on the state object
-    loadPost(state.post);
+    getPost(state.post);
   } else {
     // Handle the default behavior (e.g., go back to the homepage)
     back();
   }
 }
 
-
-// function extractPostKeyFromURL(url) {
-//   const startIndex = url.lastIndexOf("/") + 1;
-//   const endIndex = url.length;
-//   const key = url.substring(startIndex, endIndex);
-
-//   return key;
-// }
 
 function extractPostKeyFromURL(url) {
   const regex = /\/post\/([^/?#]+)/;
@@ -921,3 +1157,106 @@ function back2() {
   a.href = url;
   a.click();
 }
+
+// Function to create a post item
+function createPostItem(title, imageSrc, postId) {
+  const template = document.getElementById('post-template');
+  const postItem = template.content.cloneNode(true).querySelector('.post-item');
+
+  // Set post title
+  const postTitle = postItem.querySelector('.post-title');
+  postTitle.textContent = title;
+
+  // Set post image
+  const postImage = postItem.querySelector('.post-image');
+  postImage.style.backgroundImage = `url(${imageSrc})`;
+
+  // Add click event listener to fetch post details
+  postItem.addEventListener('click', () => {
+    getPost(postId);
+  });
+
+  return postItem;
+}
+
+// Function to display posts
+function displayPosts(posts) {
+  const gridContainer = document.querySelector('.grid-container');
+
+  // Clear existing content
+  gridContainer.innerHTML = '';
+
+
+  // Iterate over posts and create post items
+  posts.forEach((post) => {
+    const postItem = createPostItem(post.title, post.image, post.id);
+    gridContainer.appendChild(postItem);
+  });
+}
+
+// Function to show tag title
+function showTagTitle(tag) {
+  const tagTitle = document.querySelector('.tag-title');
+  tagTitle.textContent = `Showing posts with tag "${tag}"`;
+}
+
+// Function to show no posts found message
+function showNoPostsFound() {
+  const postsContainer = document.querySelector('.posts-container');
+  postsContainer.innerHTML = '<h2>No posts found with the specified tag.</h2>';
+}
+
+// Function to handle posts with the specified tag
+function handlePostsByTag(tag) {
+  // Retrieve posts from Firestore based on the tag
+  const postsRef = db.collection('posts');
+
+  // Fetch all posts and filter based on the tag
+  postsRef.get()
+    .then((querySnapshot) => {
+      const posts = [];
+      querySnapshot.forEach((doc) => {
+        const post = doc.data();
+        const tags = post.tags;
+        post.id = doc.id;
+
+        if (tags.includes(tag)) {
+          posts.push(post);
+        }
+      });
+
+      // Show tag title
+      showTagTitle(tag);
+
+      // Display posts or show no posts found message
+      if (posts.length > 0) {
+        displayPosts(posts);
+        document.getElementById("tagsC").classList.remove("hidden");
+      } else {
+        showNoPostsFound();
+      }
+    })
+    .catch((error) => {
+      console.log('Error getting posts:', error);
+    });
+}
+
+// Function to handle URL parameters and fetch posts by tag
+function handleUrlParameters() {
+  // Get the tag parameter from the URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const tag = urlParams.get('tag');
+
+  if (!tag) {
+    // console.log('No tag parameter found in the URL');
+    return;
+  }
+
+  // console.log('Tag parameter found in the URL:', tag);
+
+  // Handle posts with the specified tag
+  handlePostsByTag(tag);
+}
+
+// Call the function to handle URL parameters and fetch posts
+handleUrlParameters();

@@ -496,15 +496,15 @@ th {
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
-article a {
+article #desc a {
     color: #1E90FF;
     text-decoration: none;
     position: relative;
     transition: color 0.3s ease;
 }
 
-article a:before,
-article a:after {
+article #desc a:before,
+article #desc a:after {
     content: "";
     position: absolute;
     bottom: -2px;
@@ -514,24 +514,24 @@ article a:after {
     transition: all 0.23s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-article a:before {
+article #desc a:before {
     left: 50%;
 }
 
-article a:after {
+article #desc a:after {
     right: 50%;
 }
 
-article a:hover {
+article #desc a:hover {
     color: #FF4500;
 }
 
-article a:hover:before,
-article a:hover:after {
+article #desc a:hover:before,
+article #desc a:hover:after {
     width: 50%;
 }
 
-article a:visited {
+article #desc a:visited {
     color: #800080;
 }
 
@@ -666,4 +666,124 @@ article details:hover {
 #backButton:hover {
     background-color: #ccc;
     transform: translateY(-2px);
+}
+
+#pages {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+
+
+#load-more-btn {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-right: 5px;
+    background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+    color: #333;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+    transition: all 0.24s cubic-bezier(0.39, 0.575, 0.565, 1) 0ms;
+}
+
+#load-more-btn:hover {
+    background: linear-gradient(to bottom, #f5f5f5, #f2f1f1);
+}
+
+#load-more-btn:active {
+    background: linear-gradient(to bottom, #333, #222);
+    color: #fff;
+}
+
+#load-more-btn.hidden {
+    display: none;
+}
+
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99990;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-content h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.loading-content p {
+    font-size: 16px;
+}
+
+/* Styles for posts container */
+.posts-container {
+    width: 70%;
+    margin: auto;
+}
+
+.tag-title {
+    text-align: center;
+}
+
+/* Grid layout styles */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 20px;
+}
+
+/* Post item styles */
+.post-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) 0ms;
+    cursor: pointer;
+}
+
+.post-item:hover {
+    transform: translateY(-5px);
+}
+
+.post-image:focus {
+    outline: none;
+}
+
+.post-image:active {
+    scale: 0.95;
+}
+
+
+.post-image {
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+}
+
+.post-title {
+    margin-top: 10px;
+    font-size: 18px;
+    text-align: center;
 }
