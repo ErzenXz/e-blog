@@ -165,7 +165,7 @@ function editPost(postId) {
                 const dateLabel = document.createElement('label');
                 dateLabel.textContent = 'Date:';
                 const dateInput = document.createElement('input');
-                dateInput.type = 'date';
+                dateInput.type = 'datetime-local';
                 dateInput.valueAsNumber = post.date;
 
                 const descriptionLabel = document.createElement('label');

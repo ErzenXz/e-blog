@@ -123,6 +123,14 @@ function loadPosts() {
         let description = doc.data().description ?? "No description yet.";
         let tags = doc.data().tags ?? "No tags";
         let date = doc.data().date ?? "Date error";
+
+
+        let newDate = new Date().getTime();
+
+        if (newDate < date) {
+          return;
+        }
+
         let dateF = doc.data().dateF ?? "Date error";
         let image =
           doc.data().image ||
@@ -784,15 +792,16 @@ function postComment(key) {
     });
 
     let blogRef = firebase.firestore().collection("stats").doc("1");
-    blogRef.get().then(function (doc) {
-      if (doc.exists) {
-        let comments = doc.data().comments;
-        comments++;
-        blogRef.update({
-          comments: comments
-        })
-      }
+    // Use Firestore's FieldValue.increment() to atomically increment the value
+    blogRef.update({
+      comments: firebase.firestore.FieldValue.increment(1)
     })
+      .then(function () {
+        console.log("View count incremented successfully!");
+      })
+      .catch(function (error) {
+        console.error("Error incrementing view count: ", error);
+      });
 
     toast("Your comment has been posted!")
   } catch (error) {
@@ -1258,5 +1267,23 @@ function handleUrlParameters() {
   handlePostsByTag(tag);
 }
 
+
+function addPageView() {
+  let blogRef = firebase.firestore().collection("stats").doc("1");
+
+  // Use Firestore's FieldValue.increment() to atomically increment the value
+  blogRef.update({
+    visits: firebase.firestore.FieldValue.increment(1)
+  })
+    .then(function () {
+      // console.log("View count incremented successfully!");
+    })
+    .catch(function (error) {
+      console.error("Error incrementing view count: ", error);
+    });
+}
+
+
 // Call the function to handle URL parameters and fetch posts
 handleUrlParameters();
+addPageView();

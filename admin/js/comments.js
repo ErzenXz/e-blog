@@ -195,6 +195,7 @@ function deleteComment(postId, commentId) {
     commentRef.remove()
         .then(function () {
             toast('Comment deleted successfully!');
+            decreaseComment();
         })
         .catch(function (error) {
             toast('Error deleting comment:', error);
@@ -255,6 +256,21 @@ function toast(message, duration = 4500, delay = 0) {
             toastContainer.remove();
         }, 300);
     };
+}
+
+function decreaseComment() {
+    let blogRef = firebase.firestore().collection("stats").doc("1");
+
+    // Use Firestore's FieldValue.increment() with a negative value to decrement the view count
+    blogRef.update({
+        comments: firebase.firestore.FieldValue.increment(-1)
+    })
+        .then(function () {
+            console.log("View count decremented successfully!");
+        })
+        .catch(function (error) {
+            console.error("Error decrementing view count: ", error);
+        });
 }
 
 
