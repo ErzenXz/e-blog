@@ -19,7 +19,7 @@ function trackAnalyticsData() {
 
     let urlKey = extractPostKeyFromURL(currentPage);
 
-    if (urlKey != null && urlKey != undefined && urlKey != "" && urlKey != " " && urlKey != currentPost) {
+    if (urlKey != null && urlKey != undefined && urlKey != "" && urlKey != " ") {
         urlKey = urlKey;
     } else {
         urlKey = "homepage";

@@ -6,23 +6,33 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eBlog • Home</title>
-
-    <link rel="stylesheet" id="style" href="css/index.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight&family=Lato&display=swap" rel="stylesheet">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark-dimmed.min.css"
         integrity="sha512-zcatBMvxa7rT7dDklfjauWsfiSFParF+hRfCdf4Zr40/MmA1gkFcBRbop0zMpvYF3FmznYFgcL8wlcuO/GwHoA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" id="style" href="css/def.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight&family=Lato&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://erzenchat.tk/css/lightbox.css" />
 
 
 
     <script src="js/user_settings.js"></script>
+
+
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-auth.min.js"></script>
+
+
     <script defer src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+
+    <script defer src="js/libs/analytics.js"></script>
+    <script defer src="js/libs/errors.js"></script>
     <script defer src="js/index.js"></script>
     <script defer src="js/libs/lightbox.js"></script>
 </head>
@@ -106,12 +116,11 @@
         <p>&copy; 2023 Erzen Blog. All rights reserved.</p>
     </footer>
 
+
     <textarea name="demo" id="demo" class="hidden" cols="30" rows="10"></textarea>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-app.min.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-auth.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <!-- <script defer src="https://kit.fontawesome.com/f45cd9c28c.js"></script> -->
 
@@ -136,8 +145,7 @@
     <button id="backButton" title="Go Back" class="hidden">&larr;</button>
     <button id="scrollToTopButton" title="Scroll to Top">&uarr;</button>
 
-    <script defer src="js/libs/analytics.js"></script>
-    <script defer src="js/libs/errors.js"></script>
+
     <script src="https://kit.fontawesome.com/f45cd9c28c.js" crossorigin="anonymous" defer></script>
 
 </body>

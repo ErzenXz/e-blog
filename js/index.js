@@ -8,85 +8,192 @@ let b = false;
 
 let searchIndex = [];
 let currentPost = null;
+const postsRef = db.collection("posts");
+let lastVisible = null; // Reference to the last visible document
 
 if (getSettingsFromFirebase) {
 
-  const settingsRef = db.collection("settings");
 
-  settingsRef.get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      // Process each document
-      const data = doc.data();
-      document.getElementById("blogTitle").innerText = data.title;
-      document.getElementById("footer").innerText = data.footer;
-      document.title = data.titleHeader;
-      document.getElementById("loadingMain").style.display = "none";
-      document.getElementById("navMain").innerHTML = data.nav;
-      document.getElementById("ads").innerHTML = data.ads;
+  // Check the localStorange if the settings are alerdy cached and not oldern than 3 days
 
+  let settings = localStorage.getItem("settings");
+  let settingsDate = localStorage.getItem("settingsDate") ?? new Date(0);
 
-      let ht1 = document.createElement("div");
-      ht1.innerHTML = data.html1;
-      document.body.appendChild(ht1);
+  let date = new Date();
+  let date2 = new Date(settingsDate);
+  let diff = date.getTime() - date2.getTime();
+  let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
 
-      // Run scripts within the new element
-      const scripts = ht1.getElementsByTagName("script");
-      for (let i = 0; i < scripts.length; i++) {
-        eval(scripts[i].innerHTML);
-      }
+  if (settings != null && settings != undefined && settings != "" && settings != " " && settingsDate != null && settingsDate != undefined && settingsDate != "" && settingsDate != " " && diffDays <= 1) {
+
+    const data = JSON.parse(settings);
+
+    document.getElementById("blogTitle").innerText = data.title;
+    document.getElementById("footer").innerText = data.footer;
+    document.title = data.titleHeader;
+    document.getElementById("loadingMain").style.display = "none";
+    document.getElementById("navMain").innerHTML = data.nav;
+    document.getElementById("ads").innerHTML = data.ads;
 
 
-      limit = data.postsPerLoad; // limit of the number of posts to be displayed on the page
-      loadMoreText = data.loadMoreTest; // text of the "Load more" button
-      backButtonText = data.backButtonText; // text of the "Back" button
-      commentsText = data.commentsText; // text of the "Comments" button
-      recomendedText = data.recomendedText; // text of the "Recommended posts" button
-      addCommentText = data.addCommentText; // text of the "Add comment" button
-      defaultCommentName = data.defaultCommentName; // default name of the user who left the comment
-      defaultCommentAvatar = data.defaultCommentAvatar; // default avatar of the user who left the comment
-      showSearch = data.settings.showSearch; // show the search bar
-      showImage = data.settings.showImage; // show the image of the post
-      showViews = data.settings.showViews; // show the number of views of the post
-      showReadingTime = data.settings.showReadingTime; // show the reading time of the post
-      showDate = data.settings.showDate; // show the date of the post
-      showTitle = data.settings.showTitle; // show the title of the post
-      showImage2 = data.settings.showImage2; // show the image of the post
-      showViews2 = data.settings.showViews2; // show the number of views of the post
-      showReadingTime2 = data.settings.showReadingTime2; // show the reading time of the post
-      showDate2 = data.settings.showDate2; // show the date of the post
-      showDateF2 = data.settings.showDateF2; // show the date of the post in full format
-      showTags = data.settings.showTags; // show the tags of the post
-      showComments = data.settings.showComments; // show the number of comments of the post
-      allowComments = data.settings.allowComments; // allow comments on the post
-      showBackButton = data.settings.showBackButton; // show the "Back" button at the end of the post
-      showRecommendedPosts = data.settings.showRecommendedPosts; // show recommended posts at the end of the post
-      showCopyCodeButton = data.settings.showCopyCodeButton; // show the "Copy code" button at the end of the post
-      modernLook = data.settings.modernLook; // use the modern look of the blog
-      customCssLink = data.customCssLink; // link to the custom CSS file
+    let ht1 = document.createElement("div");
+    ht1.innerHTML = data.html1;
+    document.body.appendChild(ht1);
 
-      let urlKey = extractPostKeyFromURL(location.href);
-
-      if (urlKey != null && urlKey != undefined && urlKey != "" && urlKey != " " && urlKey != currentPost) {
-        getPost(urlKey);
-      }
-
-      if (showSearch == false) {
-        document.getElementById("searchCont").style.display = "none";
-      }
-
-      if (modernLook == true) {
-        document.getElementById("style").href = "css/modern.css";
-      } else {
-        if (customCssLink != null && customCssLink != undefined && customCssLink != "" && customCssLink != " ") {
-          document.getElementById("style").href = customCssLink;
-        }
-      }
+    // Run scripts within the new element
+    const scripts = ht1.getElementsByTagName("script");
+    for (let i = 0; i < scripts.length; i++) {
+      eval(scripts[i].innerHTML);
+    }
 
 
+    limit = data.postsPerLoad; // limit of the number of posts to be displayed on the page
+    loadMoreText = data.loadMoreTest; // text of the "Load more" button
+    backButtonText = data.backButtonText; // text of the "Back" button
+    commentsText = data.commentsText; // text of the "Comments" button
+    recomendedText = data.recomendedText; // text of the "Recommended posts" button
+    addCommentText = data.addCommentText; // text of the "Add comment" button
+    defaultCommentName = data.defaultCommentName; // default name of the user who left the comment
+    defaultCommentAvatar = data.defaultCommentAvatar; // default avatar of the user who left the comment
+    showSearch = data.settings.showSearch; // show the search bar
+    showImage = data.settings.showImage; // show the image of the post
+    showViews = data.settings.showViews; // show the number of views of the post
+    showReadingTime = data.settings.showReadingTime; // show the reading time of the post
+    showDate = data.settings.showDate; // show the date of the post
+    showTitle = data.settings.showTitle; // show the title of the post
+    showImage2 = data.settings.showImage2; // show the image of the post
+    showViews2 = data.settings.showViews2; // show the number of views of the post
+    showReadingTime2 = data.settings.showReadingTime2; // show the reading time of the post
+    showDate2 = data.settings.showDate2; // show the date of the post
+    showDateF2 = data.settings.showDateF2; // show the date of the post in full format
+    showTags = data.settings.showTags; // show the tags of the post
+    showComments = data.settings.showComments; // show the number of comments of the post
+    allowComments = data.settings.allowComments; // allow comments on the post
+    showBackButton = data.settings.showBackButton; // show the "Back" button at the end of the post
+    showRecommendedPosts = data.settings.showRecommendedPosts; // show recommended posts at the end of the post
+    showCopyCodeButton = data.settings.showCopyCodeButton; // show the "Copy code" button at the end of the post
+    modernLook = data.settings.modernLook; // use the modern look of the blog
+    customCssLink = data.customCssLink; // link to the custom CSS file
+
+    let urlKey = extractPostKeyFromURL(location.href);
+
+    if (urlKey != null && urlKey != undefined && urlKey != "" && urlKey != " " && urlKey != currentPost) {
+      getPost(urlKey);
+      document.getElementById("load-more").classList.add("hidden");
+    } else {
       loadPosts();
-      done = true;
+
+    }
+
+    if (showSearch == false) {
+      document.getElementById("searchCont").style.display = "none";
+    }
+
+    if (modernLook == true) {
+      document.getElementById("style").href = "css/modern.css";
+    } else {
+      if (customCssLink != null && customCssLink != undefined && customCssLink != "" && customCssLink != " ") {
+        document.getElementById("style").href = customCssLink;
+      } else {
+        document.getElementById("style").href = "css/index.css";
+      }
+    }
+
+    done = true;
+
+  } else {
+    console.log("Settings were not cached");
+
+
+
+    const settingsRef = db.collection("settings");
+
+    settingsRef.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        // Process each document
+        const data = doc.data();
+
+        // Cache the settings
+        localStorage.setItem("settings", JSON.stringify(data));
+        localStorage.setItem("settingsDate", new Date());
+
+
+
+        document.getElementById("blogTitle").innerText = data.title;
+        document.getElementById("footer").innerText = data.footer;
+        document.title = data.titleHeader;
+        document.getElementById("loadingMain").style.display = "none";
+        document.getElementById("navMain").innerHTML = data.nav;
+        document.getElementById("ads").innerHTML = data.ads;
+
+
+        let ht1 = document.createElement("div");
+        ht1.innerHTML = data.html1;
+        document.body.appendChild(ht1);
+
+        // Run scripts within the new element
+        const scripts = ht1.getElementsByTagName("script");
+        for (let i = 0; i < scripts.length; i++) {
+          eval(scripts[i].innerHTML);
+        }
+
+
+        limit = data.postsPerLoad; // limit of the number of posts to be displayed on the page
+        loadMoreText = data.loadMoreTest; // text of the "Load more" button
+        backButtonText = data.backButtonText; // text of the "Back" button
+        commentsText = data.commentsText; // text of the "Comments" button
+        recomendedText = data.recomendedText; // text of the "Recommended posts" button
+        addCommentText = data.addCommentText; // text of the "Add comment" button
+        defaultCommentName = data.defaultCommentName; // default name of the user who left the comment
+        defaultCommentAvatar = data.defaultCommentAvatar; // default avatar of the user who left the comment
+        showSearch = data.settings.showSearch; // show the search bar
+        showImage = data.settings.showImage; // show the image of the post
+        showViews = data.settings.showViews; // show the number of views of the post
+        showReadingTime = data.settings.showReadingTime; // show the reading time of the post
+        showDate = data.settings.showDate; // show the date of the post
+        showTitle = data.settings.showTitle; // show the title of the post
+        showImage2 = data.settings.showImage2; // show the image of the post
+        showViews2 = data.settings.showViews2; // show the number of views of the post
+        showReadingTime2 = data.settings.showReadingTime2; // show the reading time of the post
+        showDate2 = data.settings.showDate2; // show the date of the post
+        showDateF2 = data.settings.showDateF2; // show the date of the post in full format
+        showTags = data.settings.showTags; // show the tags of the post
+        showComments = data.settings.showComments; // show the number of comments of the post
+        allowComments = data.settings.allowComments; // allow comments on the post
+        showBackButton = data.settings.showBackButton; // show the "Back" button at the end of the post
+        showRecommendedPosts = data.settings.showRecommendedPosts; // show recommended posts at the end of the post
+        showCopyCodeButton = data.settings.showCopyCodeButton; // show the "Copy code" button at the end of the post
+        modernLook = data.settings.modernLook; // use the modern look of the blog
+        customCssLink = data.customCssLink; // link to the custom CSS file
+
+        let urlKey = extractPostKeyFromURL(location.href);
+
+        if (urlKey != null && urlKey != undefined && urlKey != "" && urlKey != " " && urlKey != currentPost) {
+          getPost(urlKey);
+          document.getElementById("load-more").classList.add("hidden");
+        } else {
+          loadPosts();
+
+        }
+
+        if (showSearch == false) {
+          document.getElementById("searchCont").style.display = "none";
+        }
+
+        if (modernLook == true) {
+          document.getElementById("style").href = "css/modern.css";
+        } else {
+          if (customCssLink != null && customCssLink != undefined && customCssLink != "" && customCssLink != " ") {
+            document.getElementById("style").href = customCssLink;
+          }
+        }
+
+
+        done = true;
+      });
     });
-  });
+
+  }
 
 } else {
   done = true;
@@ -96,6 +203,10 @@ if (getSettingsFromFirebase) {
   if (urlKey != null && urlKey != undefined && urlKey != "" && urlKey != " " && urlKey != currentPost) {
     console.log("URL key: " + urlKey);
     getPost(urlKey);
+    document.getElementById("load-more").classList.add("hidden");
+  } else {
+    loadPosts();
+
   }
 
   document.getElementById("loadingMain").style.display = "none";
@@ -108,11 +219,9 @@ if (getSettingsFromFirebase) {
     document.getElementById("searchCont").style.display = "none";
   }
 
-  loadPosts();
 }
 
-const postsRef = db.collection("posts");
-let lastVisible = null; // Reference to the last visible document
+
 
 function loadPosts() {
   document.getElementById("loading").classList.remove("hidden");
@@ -749,6 +858,16 @@ function viewPost(post) {
     );
   }
 
+  // Set all code tags with .hljs class the width of max container width
+
+  let codeTags = document.querySelectorAll("code.hljs");
+  codeTags.forEach(tag => {
+    // tag.style.maxWidth = "50%";
+    // Break the line if text is too long with css
+    tag.style.whiteSpace = "pre-wrap";
+  }
+  );
+
 }
 
 function back() {
@@ -936,20 +1055,78 @@ function getPost(key) {
 
   if (key == undefined || key == null || key == "" || key == false || key == currentPost) return false;
 
+
+  // Check the localStorange if the post is cached and date is not older than 1 week
+
+  let cachedPost = localStorage.getItem("cache-" + key);
+
+  if (cachedPost != null) {
+    cachedPost = JSON.parse(cachedPost);
+    let time1 = new Date().getTime();
+    if (time1 - cachedPost.time < 604800000) {
+      console.log(`Post ${key} was loaded from cache`);
+
+      // Load the post from cache
+
+      document.getElementById("tagsC").classList.add("hidden");
+      document.getElementById("loading").classList.add("hidden");
+      document.getElementById("footer").classList.remove("hidden");
+      document.getElementById("container").classList.remove("hidden");
+      document.getElementById("backButton").classList.remove("hidden");
+      viewPost(cachedPost.post);
+
+      document.getElementById("search").value = "";
+      document.getElementById("searchResults").innerHTML = "";
+      toast("Post loaded in " + (new Date().getTime() - time1) + "ms", 5000);
+
+      // Add a new entry to the browser history
+      window.history.pushState({ post: key }, "", "?/post/" + key);
+
+      setTimeout(function () {
+        let postId = key;
+
+        if (localStorage.getItem(postId) === null) {
+          document.getElementById("like-" + postId).innerHTML = '<i class="far fa-heart"></i>';
+        } else {
+          if (localStorage.getItem(postId) === "liked") {
+            document.getElementById("like-" + postId).innerHTML = '<i class="fas fa-heart"></i>';
+          } else {
+            document.getElementById("like-" + postId).innerHTML = '<i class="far fa-heart"></i>';
+          }
+        }
+      }, 50);
+      return true;
+    }
+  }
+
+
   document.getElementById("loading").classList.remove("hidden");
   document.getElementById("container").classList.add("hidden");
   document.getElementById("footer").classList.add("hidden");
   currentPost = key;
 
   toast("Loading post (" + key + ")", 5000);
-  let time = new Date().getTime();
+  let time2 = new Date().getTime();
   let blogRef = firebase.firestore().collection("posts").doc(key);
   blogRef.get().then(function (doc) {
     if (doc.exists) {
       let post = doc.data();
       post.key = key;
+
+      // Cache the post
+      let time = new Date().getTime();
+      let cachedPost = {
+        time: time,
+        post: post
+      }
+
+      localStorage.setItem("cache-" + key, JSON.stringify(cachedPost));
+
+
+      console.log(cachedPost);
+
       document.getElementById("tagsC").classList.add("hidden");
-      viewPost(post);
+      viewPost(cachedPost.post);
       document.getElementById("loading").classList.add("hidden");
       document.getElementById("footer").classList.remove("hidden");
       document.getElementById("container").classList.remove("hidden");
@@ -957,7 +1134,7 @@ function getPost(key) {
 
       document.getElementById("search").value = "";
       document.getElementById("searchResults").innerHTML = "";
-      toast("Post loaded in " + (new Date().getTime() - time) + "ms", 5000);
+      toast("Post loaded in " + (new Date().getTime() - time2) + "ms", 5000);
 
       // Add a new entry to the browser history
       window.history.pushState({ post: key }, "", "?/post/" + key);
@@ -1435,6 +1612,21 @@ function dislikePost(postId) {
       console.error("Error decrementing like count: ", error);
     });
 }
+
+document.getElementById("footer").addEventListener("click", function () {
+
+  let a = confirm("Are you sure you want to clear the page cache?");
+
+  if (a === false) {
+    return;
+  }
+
+  toast("Clearing page cache...");
+  localStorage.removeItem("settings");
+  localStorage.removeItem("settingData");
+  location.reload();
+}
+);
 
 
 // Call the function to handle URL parameters and fetch posts

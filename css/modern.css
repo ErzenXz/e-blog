@@ -829,3 +829,7 @@ article details:hover {
 .liked {
     color: #ff0000;
 }
+
+#footer {
+    cursor: pointer;
+}
