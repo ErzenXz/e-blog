@@ -48,6 +48,9 @@ const fetchDocument = async () => {
             document.getElementById('loadMoreTest').value = data.loadMoreTest;
             document.getElementById('commentsText').value = data.commentsText;
             document.getElementById('postsPerLoad').value = data.postsPerLoad;
+            document.getElementById('modern').checked = data.settings.modernLook;
+            document.getElementById('moderncss').value = data.customCssLink;
+
             // Display other document values here
         } else {
             console.log('Document not found!');
@@ -91,6 +94,8 @@ const handleEdit = async () => {
     const footer = document.getElementById('footer').value;
     const html1 = document.getElementById('html').value;
     const postsPerLoad = Number(document.getElementById('postsPerLoad').value);
+    const modernLook = document.getElementById('modern').checked;
+    const customCssLink = document.getElementById('moderncss').value;
 
     try {
         await docRef.update({
@@ -112,6 +117,7 @@ const handleEdit = async () => {
             "settings.showReadingTime": showReadingTime,
             "settings.showCopyCodeButton": showCopyCodeButton,
             "settings.showViews": showViews,
+            "settings.modernLook": modernLook,
             defaultCommentName,
             ads,
             defaultCommentAvatar,
@@ -124,7 +130,8 @@ const handleEdit = async () => {
             title,
             footer,
             html1,
-            postsPerLoad
+            postsPerLoad,
+            customCssLink
 
         });
         toast("Settings updated successfully!");

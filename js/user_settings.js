@@ -7,6 +7,8 @@ let blogFooter = "© 2023 Erzen Blog. All rights reserved."; // footer of the bl
 
 let blogHeaderTitle = "eBlog • Home"; // title of the blog in the header
 
+let modernLook = false; // use modern look of the blog
+let customCssLink = ""; // link to the custom CSS file
 
 let limit = 8;
 /* limit of the number of posts to be displayed on the page,
@@ -61,3 +63,4 @@ let showBackButton = true; // show the "Back" button at the end of the post
 let showRecommendedPosts = true; // show recommended posts at the end of the post
 
 let showCopyCodeButton = true; // show the "Copy code" button at the end of the post
+

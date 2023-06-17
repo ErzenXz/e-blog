@@ -4,6 +4,7 @@ const db = firebase.firestore();
 const BLOGS = document.getElementById("container");
 
 let done = false;
+let b = false;
 
 let searchIndex = [];
 let currentPost = null;
@@ -60,11 +61,12 @@ if (getSettingsFromFirebase) {
       showBackButton = data.settings.showBackButton; // show the "Back" button at the end of the post
       showRecommendedPosts = data.settings.showRecommendedPosts; // show recommended posts at the end of the post
       showCopyCodeButton = data.settings.showCopyCodeButton; // show the "Copy code" button at the end of the post
+      modernLook = data.settings.modernLook; // use the modern look of the blog
+      customCssLink = data.customCssLink; // link to the custom CSS file
 
       let urlKey = extractPostKeyFromURL(location.href);
 
       if (urlKey != null && urlKey != undefined && urlKey != "" && urlKey != " " && urlKey != currentPost) {
-        console.log("URL key: " + urlKey);
         getPost(urlKey);
       }
 
@@ -72,6 +74,13 @@ if (getSettingsFromFirebase) {
         document.getElementById("searchCont").style.display = "none";
       }
 
+      if (modernLook == true) {
+        document.getElementById("style").href = "css/modern.css";
+      } else {
+        if (customCssLink != null && customCssLink != undefined && customCssLink != "" && customCssLink != " ") {
+          document.getElementById("style").href = customCssLink;
+        }
+      }
 
 
       loadPosts();
@@ -461,6 +470,8 @@ function time_ago(time) {
 function viewPost(post) {
   // key, title, description, tags, date, dateF, image, views
 
+  trackAnalyticsData();
+
   let key = post.key;
   let title = post.title;
   let description = post.description;
@@ -524,7 +535,7 @@ function viewPost(post) {
 
   if (showTags) {
     tagsA2 = `<div class="tags">
-    ${tagsA.split(",").map(tag => `<a href="${location.origin + "?tag=" + tag}">${tag}</a>`).join("")} </div>`;
+    ${tagsA.split(",").map(tag => `<a title="Show all posts with tag ${tag}" href="${location.origin + "?tag=" + tag}">${tag}</a>`).join("")} </div>`;
   }
 
   if (showReadingTime2) {
@@ -551,10 +562,13 @@ function viewPost(post) {
           <div class="article-footer">
               ${viewsA}
               ${dateA}
-              ${timetoReadA}
-              ${dateF2A}
-
               ${tagsA2}
+          </div>
+          <div class="statsButtons">
+          <p class="share" title="Like post" id="like-${key}" onclick="likePost('${key}')">Like</p>
+          <p>${dateF2A}</p>
+          <p title="Time it takes to read this post.">${timetoReadA}</p>
+          <p class="share" title="Share post" onclick="openShareMenu('${key}')">Share</p>
           </div>
         </div>
     </div>
@@ -562,6 +576,8 @@ function viewPost(post) {
   </article>
     `;
   BLOGS.innerHTML = "";
+
+  let ccc = `<p class="share" onclick="dislikePost('${key}')">Dislike</p>`;
 
 
   let t = document.getElementById("demo").value;
@@ -578,7 +594,7 @@ function viewPost(post) {
   hljs.highlightAll();
   window.scrollTo(0, 0);
 
-  // adding a like
+  // adding a view
 
   let blogRef = firebase.firestore().collection("posts").doc(key);
   blogRef.get().then(function (doc) {
@@ -660,6 +676,7 @@ function viewPost(post) {
     addComment(key);
   }
 
+
   if (showCopyCodeButton) {
     // Add copy buttons to code blocks
     const codeBlocks = document.querySelectorAll('pre code');
@@ -687,6 +704,7 @@ function viewPost(post) {
       toast('Code copied to clipboard!');
     } catch (err) {
       toast('Failed to copy code:', err);
+      reportError(err);
     }
 
     // Remove the selection
@@ -712,6 +730,8 @@ function viewPost(post) {
       tags: tags,
       views: views
     };
+
+
 
     let recomendedPosts = findRecommendedPosts(currentPost, searchIndex, 5);
 
@@ -806,6 +826,7 @@ function postComment(key) {
     toast("Your comment has been posted!")
   } catch (error) {
     toast("There was an error posting your comment. Please try again later.")
+    reportError(error);
   }
 
   document.getElementById("comment").value = "";
@@ -940,6 +961,20 @@ function getPost(key) {
 
       // Add a new entry to the browser history
       window.history.pushState({ post: key }, "", "?/post/" + key);
+
+      setTimeout(function () {
+        let postId = key;
+
+        if (localStorage.getItem(postId) === null) {
+          document.getElementById("like-" + postId).innerHTML = '<i class="far fa-heart"></i>';
+        } else {
+          if (localStorage.getItem(postId) === "liked") {
+            document.getElementById("like-" + postId).innerHTML = '<i class="fas fa-heart"></i>';
+          } else {
+            document.getElementById("like-" + postId).innerHTML = '<i class="far fa-heart"></i>';
+          }
+        }
+      }, 50);
     }
   })
 }
@@ -1280,6 +1315,124 @@ function addPageView() {
     })
     .catch(function (error) {
       console.error("Error incrementing view count: ", error);
+    });
+}
+
+function openShareMenu(postKey) {
+  const currentUrl = window.location.href;
+
+  if (navigator.share) {
+
+    let blogRef = firebase.firestore().collection("stats").doc("1");
+
+    // Use Firestore's FieldValue.increment() with a negative value to decrement the view count
+    blogRef.update({
+      shares: firebase.firestore.FieldValue.increment(1)
+    })
+      .then(function () {
+      })
+      .catch(function (error) {
+      });
+
+
+    const postRef = db.collection('posts').doc(postKey);
+
+    // Use Firestore's FieldValue.increment() to atomically increment the value
+    postRef.update({
+      shares: firebase.firestore.FieldValue.increment(1)
+    })
+
+      .then(function () {
+        // console.log("Like count incremented successfully!");
+      })
+      .catch(function (error) {
+        // console.error("Error incrementing like count: ", error);
+      });
+
+    navigator.share({
+      url: currentUrl
+    })
+      .catch(error => {
+        console.error('Error sharing:', error);
+      });
+  } else {
+    console.log('Sharing not supported on this browser.');
+    // Fallback behavior for browsers that do not support the Web Share API.
+    // You can implement your own custom share functionality here.
+  }
+}
+
+
+
+
+
+
+
+function likePost(postId) {
+
+  // Check the localstorange if the user has alerdy liked or disliked this post
+
+  if (localStorage.getItem(postId) === null) {
+    localStorage.setItem(postId, "liked");
+    document.getElementById("like-" + postId).innerHTML = '<i class="fas fa-heart"></i>';
+  } else {
+    if (localStorage.getItem(postId) === "liked") {
+      localStorage.removeItem(postId);
+      dislikePost(postId);
+      document.getElementById("like-" + postId).innerHTML = '<i class="far fa-heart"></i>';
+      return;
+    } else {
+      localStorage.removeItem(postId);
+      likePost(postId);
+      document.getElementById("like-" + postId).innerHTML = '<i class="fas fa-heart"></i>';
+      return;
+    }
+  }
+
+  const postRef = db.collection('posts').doc(postId);
+
+  // Use Firestore's FieldValue.increment() to atomically increment the value
+  postRef.update({
+    likes: firebase.firestore.FieldValue.increment(1)
+  })
+
+    .then(function () {
+      // console.log("Like count incremented successfully!");
+    })
+    .catch(function (error) {
+      console.error("Error incrementing like count: ", error);
+    });
+}
+
+function dislikePost(postId) {
+
+  // Check the localstorange if the user has alerdy liked or disliked this post
+
+  if (localStorage.getItem(postId) === null) {
+    localStorage.setItem(postId, "disliked");
+  } else {
+    if (localStorage.getItem(postId) === "disliked") {
+      localStorage.removeItem(postId);
+      likePost(postId);
+      return;
+    } else {
+      localStorage.removeItem(postId);
+      dislikePost(postId);
+      return;
+    }
+  }
+
+  const postRef = db.collection('posts').doc(postId);
+
+  // Use Firestore's FieldValue.increment() with a negative value to decrement the value
+  postRef.update({
+    likes: firebase.firestore.FieldValue.increment(-1)
+  })
+    .then(function () {
+      // console.log("Like count decremented successfully!");
+    })
+    .catch(function (error) {
+      console.error("Error decrementing like count: ", error);
     });
 }
 

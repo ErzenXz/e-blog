@@ -292,13 +292,27 @@ function deletePost(postId) {
             toast('Post deleted successfully');
             // Update the webpage to remove the deleted post
             // Example: Remove the specific post element from the DOM
+            decreasePosts();
         })
         .catch((error) => {
             toast('Error deleting post: ', error);
         });
 }
 
+function decreasePosts() {
+    let blogRef = firebase.firestore().collection("stats").doc("1");
 
+    // Use Firestore's FieldValue.increment() with a negative value to decrement the view count
+    blogRef.update({
+        posts: firebase.firestore.FieldValue.increment(-1)
+    })
+        .then(function () {
+            console.log("View count decremented successfully!");
+        })
+        .catch(function (error) {
+            console.error("Error decrementing view count: ", error);
+        });
+}
 
 // Real-time listener for new posts
 // postsRef.orderBy('date').limit(1).onSnapshot((snapshot) => {
