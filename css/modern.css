@@ -433,7 +433,7 @@ header h1 {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 5px 10px;
+    padding: 3px 7px;
     border-radius: 7px;
     font-size: 15px;
     cursor: pointer;
@@ -445,11 +445,15 @@ header h1 {
     background-color: #44444429;
 }
 
+.searchResults .srq:active {
+    background-color: #4444443d;
+}
+
 
 
 #searchResults img {
-    width: 75px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     aspect-ratio: 16/9;
     object-fit: cover;
     margin-right: 10px;
@@ -832,4 +836,19 @@ article details:hover {
 
 #footer {
     cursor: pointer;
+}
+
+/* Apply cool outline style to focused elements */
+:focus {
+    outline: none;
+}
+
+/* Create custom outline style */
+:focus-visible {
+    outline: 2px solid #ff7c00 !important;
+    /* Orange outline color */
+    outline-offset: 2px !important;
+    /* Add a slight offset to the outline */
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #ff7c00 !important;
+    /* Add a subtle glow effect */
 }

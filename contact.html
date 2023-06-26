@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/contact.css">
+</head>
+
+<body>
+    <div class="flex items-center justify-center h-screen">
+        <div class="w-full max-w-md">
+            <h1 class="text-3xl font-bold mb-6 text-center">Contact Us</h1>
+            <form id="contactForm" class="space-y-4">
+                <input type="text" id="nameInput" placeholder="Your Name" required
+                    class="block w-full border border-gray-300 rounded-md px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="email" id="emailInput" placeholder="Your Email" required
+                    class="block w-full border border-gray-300 rounded-md px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <textarea id="messageInput" placeholder="Your Message" required
+                    class="block w-full border border-gray-300 rounded-md px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+                <button type="submit"
+                    class="block w-full bg-blue-500 text-white font-semibold rounded-md py-3 transition-colors duration-300 hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Submit</button>
+            </form>
+            <div id="responseMessage" class="text-center font-semibold text-gray-800 mt-4"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+
+</html>

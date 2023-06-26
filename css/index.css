@@ -442,15 +442,21 @@ header h1 {
     color: #fff;
 }
 
-
+.searchResults .srq:hover {
+    background-color: #444444ba;
+}
 
 #searchResults img {
-    width: 100px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     /* border-radius: 50%; */
-    object-fit: cover;
+    object-fit: contain !important;
     margin-right: 10px;
     border: 1px solid #ccc;
+}
+
+#searchResults .srq img {
+    object-fit: contain;
 }
 
 summary {
@@ -834,4 +840,19 @@ article details:hover {
 
 #footer {
     cursor: pointer;
+}
+
+/* Apply cool outline style to focused elements */
+:focus {
+    outline: none;
+}
+
+/* Create custom outline style */
+:focus-visible {
+    outline: 2px solid #ff7c00 !important;
+    /* Orange outline color */
+    outline-offset: 2px !important;
+    /* Add a slight offset to the outline */
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #ff7c00 !important;
+    /* Add a subtle glow effect */
 }

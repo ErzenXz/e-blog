@@ -657,7 +657,6 @@ function viewPost(post) {
 
 
 
-
   div.innerHTML = `
     <article class="two" style="flex-direction: column" id="${'article-' + key}">
     <div class="art">
@@ -830,6 +829,7 @@ function viewPost(post) {
     <br>
       <h2>${recomendedText}</h2>
       <div class="recomended-posts" id="recomendet">
+      No recomended posts
       </div>
     `;
     BLOGS.appendChild(recomended);
@@ -843,6 +843,14 @@ function viewPost(post) {
 
 
     let recomendedPosts = findRecommendedPosts(currentPost, searchIndex, 5);
+    document.getElementById("recomendet").innerHTML = "";
+
+    if (recomendedPosts.length === 0) {
+      document.getElementById("recomendet").innerHTML = "No recomended posts";
+    } else {
+      document.getElementById("recomendet").innerHTML = "";
+    }
+
 
     recomendedPosts.forEach(post => {
       if (post.title === currentPost.title) return;
@@ -852,7 +860,7 @@ function viewPost(post) {
         <h4>${post.title}</h4>
         <img src="${post.image}" alt="${post.title}" width="200px" height="auto" loading="lazy">
         <button onclick='getPost("${post.key}")'>View</button>
-      `;
+        `;
       document.getElementById("recomendet").appendChild(div);
     }
     );
@@ -1156,76 +1164,127 @@ function getPost(key) {
   })
 }
 
-function search() {
-  let query = String(document.getElementById("search").value).toLowerCase();
-  if (query == "" || query == false || query == null || query == undefined || query == " ") {
-    document.getElementById("searchResults").innerHTML = "";
-    return false;
-  }
+// function search() {
+//   let query = String(document.getElementById("search").value).toLowerCase();
+//   if (query == "" || query == false || query == null || query == undefined || query == " ") {
+//     document.getElementById("searchResults").innerHTML = "";
+//     return false;
+//   }
 
-  if (query.length < 2) {
-    document.getElementById("searchResults").innerHTML = "";
-    return false;
-  }
+//   if (query.length < 2) {
+//     document.getElementById("searchResults").innerHTML = "";
+//     return false;
+//   }
 
-  let dataArray = searchIndex;
+//   let dataArray = searchIndex;
 
-  // Initialize variables for tracking the best matches
-  let bestMatches = [];
-  let bestMatchScore = 0;
+//   // Initialize variables for tracking the best matches
+//   let bestMatches = [];
+//   let bestMatchScore = 0;
 
-  // Iterate over each data object in the array
-  for (let i = 0; i < dataArray.length; i++) {
-    const data = dataArray[i];
-    const { title, description, tags } = data;
-    // Calculate the relevance score for the current data object
-    const score = calculateRelevanceScore(query, String(title).toLowerCase(), description, tags);
+//   // Iterate over each data object in the array
+//   for (let i = 0; i < dataArray.length; i++) {
+//     const data = dataArray[i];
+//     const { title, description, tags } = data;
+//     // Calculate the relevance score for the current data object
+//     const score = calculateRelevanceScore(query, String(title).toLowerCase(), description, tags);
 
-    // Update the best matches if the current score is higher or equal
-    if (score >= bestMatchScore && score > 0) {
-      // If the current score is higher, clear the previous best matches
-      if (score > bestMatchScore) {
-        bestMatches = [];
-      }
+//     // Update the best matches if the current score is higher or equal
+//     if (score >= bestMatchScore && score > 0) {
+//       // If the current score is higher, clear the previous best matches
+//       if (score > bestMatchScore) {
+//         bestMatches = [];
+//       }
 
-      bestMatches.push(data);
-      bestMatchScore = score;
+//       bestMatches.push(data);
+//       bestMatchScore = score;
+//     }
+//   }
+
+//   // If there are best matches, add them to the search results
+//   let results = document.getElementById("searchResults");
+//   results.innerHTML = "";
+//   console.log(bestMatches);
+//   if (bestMatches.length > 0) {
+//     // let length = bestMatches.length;
+
+//     // if (length > 5) {
+//     //   length = 15;
+//     // }
+
+//     for (let j = 0; j < bestMatches.length; j++) {
+//       const bestMatch = bestMatches[j];
+//       let result = document.createElement("div");
+//       result.setAttribute("class", "searchResult");
+//       result.innerHTML = `<div onclick="getPost('${bestMatch.key}')" class="srq">
+//         <img src="${bestMatch.image}" alt="${bestMatch.title}" width="30px" height="30px" loading="lazy">
+//         <span>
+//           ${bestMatch.title}
+//         </span>
+//       </div>`;
+//       results.appendChild(result);
+//     }
+//   } else {
+//     let result = document.createElement("div");
+//     result.setAttribute("class", "searchResult");
+//     result.innerHTML = "No results found";
+//     results.appendChild(result);
+//   }
+
+//   return bestMatches;
+// }
+
+
+async function search2(event) {
+  if (event.key === 'Enter' || event.keyCode === 13) {
+
+    let query = String(document.getElementById("search").value).toLowerCase();
+
+    if (query == "" || query == false || query == null || query == undefined || query == " ") {
+      document.getElementById("searchResults").innerHTML = "";
+      return false;
     }
-  }
 
-  // If there are best matches, add them to the search results
-  let results = document.getElementById("searchResults");
-  results.innerHTML = "";
-  console.log(bestMatches);
-  if (bestMatches.length > 0) {
-    // let length = bestMatches.length;
+    if (query.length < 2) {
+      document.getElementById("searchResults").innerHTML = "";
+      return false;
+    }
 
-    // if (length > 5) {
-    //   length = 15;
-    // }
 
-    for (let j = 0; j < bestMatches.length; j++) {
-      const bestMatch = bestMatches[j];
-      let result = document.createElement("div");
-      result.setAttribute("class", "searchResult");
-      result.innerHTML = `<div onclick="getPost('${bestMatch.key}')" class="srq">
-        <img src="${bestMatch.image}" alt="${bestMatch.title}" width="30px" height="30px" loading="lazy">
+    let data = await searchTitleInFirestore(query);
+
+    // Display the results in the DOM
+    let results = document.getElementById("searchResults");
+    results.innerHTML = "";
+
+    if (data.length > 0) {
+      for (let i = 0; i < data.length; i++) {
+        const result = data[i];
+        let resultDiv = document.createElement("div");
+        resultDiv.setAttribute("class", "searchResult");
+        resultDiv.innerHTML = `<div onclick="getPost('${result.id}')" class="srq">
+        <img src="${result.image}" alt="${result.title}" width="30px" height="30px" loading="lazy">
         <span>
-          ${bestMatch.title}
+          ${result.title}
         </span>
       </div>`;
-      results.appendChild(result);
+        results.appendChild(resultDiv);
+      }
+    } else {
+      let resultDiv = document.createElement("div");
+      resultDiv.setAttribute("class", "searchResult");
+      resultDiv.innerHTML = "No results found";
+      results.appendChild(resultDiv);
     }
+
+    return data;
+
   } else {
-    let result = document.createElement("div");
-    result.setAttribute("class", "searchResult");
-    result.innerHTML = "No results found";
-    results.appendChild(result);
+    let results = document.getElementById("searchResults");
+    results.innerHTML = "";
   }
 
-  return bestMatches;
 }
-
 
 function calculateRelevanceScore(query, title, description, tags) {
   // Convert the query and data to lowercase for case-insensitive matching

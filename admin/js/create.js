@@ -26,7 +26,7 @@ function addPost() {
     let tags = document.getElementById("postTags").value;
     let img = document.getElementById("postImage").value;
 
-    if (title == "" || post == "" || tags == "" || img == "") {
+    if (title == "" || post == "" || tags == "") {
         toast("Please fill all the fields!");
         return false
     };
@@ -52,8 +52,10 @@ function addPost() {
     let tagsA = words;
 
     if (img == "") {
-        img = "https://media.istockphoto.com/vectors/picture-icon-vector-id931643150?k=20&m=931643150&s=612x612&w=0&h=j0OTu0faJVhzOkH4xXFnzXGNBKtsj0agu7cHMbCEIEk=";
+        img = "./images/placeholder.svg";
     }
+
+    const searchIndex = tokenizeSearchableText(title);
 
 
     db.collection("posts").add({
@@ -66,7 +68,8 @@ function addPost() {
         image: img,
         likes: 0,
         views: 0,
-        shares: 0
+        shares: 0,
+        searchIndex
     })
         .then((docRef) => {
 
@@ -89,7 +92,9 @@ function addPost() {
                         posts: posts
                     })
                 }
-            })
+            });
+
+
         })
         .catch((error) => {
             console.error("Error adding document: ", error);
@@ -246,6 +251,10 @@ function toggleContentVisibility() {
         document.getElementById("nav").classList.remove('hidden');
         document.getElementById("others").classList.remove('hidden');
     }
+}
+
+function tokenizeSearchableText(text) {
+    return text.toLowerCase().split(/\s+/).filter(word => word.length > 2);
 }
 
 // Listen for changes in the editor's modes and update the content visibility accordingly

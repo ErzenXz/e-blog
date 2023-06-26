@@ -31,6 +31,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 
+    <script defer src="js/search.js"></script>
     <script defer src="js/libs/analytics.js"></script>
     <script defer src="js/libs/errors.js"></script>
     <script defer src="js/index.js"></script>
@@ -67,7 +68,7 @@
 
 
     <div class="search" id="searchCont">
-        <input type="text" placeholder="Search..." id="search" onkeyup="search()">
+        <input type="text" placeholder="Search..." id="search" onkeydown="search2(event)">
     </div>
 
     <div class="searchResults" id="searchResults">
