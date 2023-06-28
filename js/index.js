@@ -252,7 +252,7 @@ function loadPosts() {
         let dateF = doc.data().dateF ?? "Date error";
         let image =
           doc.data().image ||
-          "https://www.pulsecarshalton.co.uk/wp-content/uploads/2016/08/jk-placeholder-image.jpg";
+          "./images/placeholder.svg";
 
         let mini =
           doc.data().titleMINI || description.split(" ").slice(0, 40).join(" ") + "...";
@@ -315,7 +315,7 @@ function loadMorePosts() {
         let dateF = doc.data().dateF ?? "Date error";
         let image =
           doc.data().image ||
-          "https://www.pulsecarshalton.co.uk/wp-content/uploads/2016/08/jk-placeholder-image.jpg";
+          "./images/placeholder.svg";
 
         let mini =
           doc.data().titleMINI || description.split(" ").slice(0, 40).join(" ") + "...";
@@ -673,10 +673,10 @@ function viewPost(post) {
               ${tagsA2}
           </div>
           <div class="statsButtons">
-          <p class="share" title="Like post" id="like-${key}" onclick="likePost('${key}')">Like</p>
+          <button class="share" title="Like post" id="like-${key}" onclick="likePost('${key}')">Like</button>
           <p>${dateF2A}</p>
           <p title="Time it takes to read this post.">${timetoReadA}</p>
-          <p class="share" title="Share post" onclick="openShareMenu('${key}')">Share</p>
+          <button class="share" title="Share post" onclick="openShareMenu('${key}')">Share</button>
           </div>
         </div>
     </div>
@@ -689,8 +689,6 @@ function viewPost(post) {
 
 
   let t = document.getElementById("demo").value;
-
-
 
   let desc = document.createElement("p");
   desc.innerHTML = marked.parse(t);
@@ -1064,7 +1062,7 @@ function getPost(key) {
   if (key == undefined || key == null || key == "" || key == false || key == currentPost) return false;
 
 
-  // Check the localStorange if the post is cached and date is not older than 1 week
+  // Check the localStorage if the post is cached and date is not older than 1 week
 
   let cachedPost = localStorage.getItem("cache-" + key);
 
@@ -1164,76 +1162,6 @@ function getPost(key) {
   })
 }
 
-// function search() {
-//   let query = String(document.getElementById("search").value).toLowerCase();
-//   if (query == "" || query == false || query == null || query == undefined || query == " ") {
-//     document.getElementById("searchResults").innerHTML = "";
-//     return false;
-//   }
-
-//   if (query.length < 2) {
-//     document.getElementById("searchResults").innerHTML = "";
-//     return false;
-//   }
-
-//   let dataArray = searchIndex;
-
-//   // Initialize variables for tracking the best matches
-//   let bestMatches = [];
-//   let bestMatchScore = 0;
-
-//   // Iterate over each data object in the array
-//   for (let i = 0; i < dataArray.length; i++) {
-//     const data = dataArray[i];
-//     const { title, description, tags } = data;
-//     // Calculate the relevance score for the current data object
-//     const score = calculateRelevanceScore(query, String(title).toLowerCase(), description, tags);
-
-//     // Update the best matches if the current score is higher or equal
-//     if (score >= bestMatchScore && score > 0) {
-//       // If the current score is higher, clear the previous best matches
-//       if (score > bestMatchScore) {
-//         bestMatches = [];
-//       }
-
-//       bestMatches.push(data);
-//       bestMatchScore = score;
-//     }
-//   }
-
-//   // If there are best matches, add them to the search results
-//   let results = document.getElementById("searchResults");
-//   results.innerHTML = "";
-//   console.log(bestMatches);
-//   if (bestMatches.length > 0) {
-//     // let length = bestMatches.length;
-
-//     // if (length > 5) {
-//     //   length = 15;
-//     // }
-
-//     for (let j = 0; j < bestMatches.length; j++) {
-//       const bestMatch = bestMatches[j];
-//       let result = document.createElement("div");
-//       result.setAttribute("class", "searchResult");
-//       result.innerHTML = `<div onclick="getPost('${bestMatch.key}')" class="srq">
-//         <img src="${bestMatch.image}" alt="${bestMatch.title}" width="30px" height="30px" loading="lazy">
-//         <span>
-//           ${bestMatch.title}
-//         </span>
-//       </div>`;
-//       results.appendChild(result);
-//     }
-//   } else {
-//     let result = document.createElement("div");
-//     result.setAttribute("class", "searchResult");
-//     result.innerHTML = "No results found";
-//     results.appendChild(result);
-//   }
-
-//   return bestMatches;
-// }
-
 
 async function search2(event) {
   if (event.key === 'Enter' || event.keyCode === 13) {
@@ -1262,12 +1190,14 @@ async function search2(event) {
         const result = data[i];
         let resultDiv = document.createElement("div");
         resultDiv.setAttribute("class", "searchResult");
-        resultDiv.innerHTML = `<div onclick="getPost('${result.id}')" class="srq">
+        resultDiv.innerHTML = `<a href="?/post/${result.id}">
+        <div  class="srq">
         <img src="${result.image}" alt="${result.title}" width="30px" height="30px" loading="lazy">
         <span>
           ${result.title}
         </span>
-      </div>`;
+      </div>
+      </a>`;
         results.appendChild(resultDiv);
       }
     } else {
@@ -1280,8 +1210,13 @@ async function search2(event) {
     return data;
 
   } else {
-    let results = document.getElementById("searchResults");
-    results.innerHTML = "";
+    // Check if the event key is Tab or Shift
+    if (event.key === 'Tab' || event.keyCode === 9 || event.key === 'Shift' || event.keyCode === 16) {
+      return false;
+    } else {
+      let results = document.getElementById("searchResults");
+      results.innerHTML = "";
+    }
   }
 
 }
@@ -1444,12 +1379,21 @@ function createPostItem(title, imageSrc, postId) {
   const postItem = template.content.cloneNode(true).querySelector('.post-item');
 
   // Set post title
-  const postTitle = postItem.querySelector('.post-title');
-  postTitle.textContent = title;
+  // const postTitle = postItem.querySelector('.post-title');
+  // postTitle.textContent = title;
 
   // Set post image
   const postImage = postItem.querySelector('.post-image');
   postImage.style.backgroundImage = `url(${imageSrc})`;
+
+  // Add a link to the post dynamically with JS
+
+  let link = document.createElement('a');
+  link.href = `/?/post/${postId}`;
+  link.textContent = title;
+  link.classList.add('post-title');
+
+  postItem.appendChild(link);
 
   // Add click event listener to fetch post details
   postItem.addEventListener('click', () => {
@@ -1686,6 +1630,27 @@ document.getElementById("footer").addEventListener("click", function () {
   location.reload();
 }
 );
+
+document.addEventListener('keydown', function (event) {
+  if (event.keyCode === 9 && !event.shiftKey) { // Check if the Tab key is pressed without Shift key
+    var skipLink = document.querySelector('.skip-link');
+    var mainContent = document.getElementById('main-content');
+    if (document.activeElement !== mainContent) {
+      skipLink.style.display = 'block';
+      skipLink.focus(); // Set focus on the link
+    } else {
+      skipLink.style.display = 'none';
+    }
+  }
+});
+
+document.addEventListener('click', function (event) {
+  var skipLink = document.querySelector('.skip-link');
+  if (event.target === skipLink) {
+    skipLink.style.display = 'none';
+  }
+});
+
 
 
 // Call the function to handle URL parameters and fetch posts

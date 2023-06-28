@@ -11,7 +11,7 @@ async function searchTitleInFirestore(title) {
 
     // Check if the user has alerdy searched for this title and no oldern than 1 hour
     if (localStorage.getItem(title) && localStorage.getItem(title + 'timestamp') > Date.now() - 3600000) {
-        toast(`Successfull retrieved from database cache.`);
+        // toast(`Successfull retrieved from database cache.`);
         return JSON.parse(localStorage.getItem(title));
     }
 
@@ -27,7 +27,7 @@ async function searchTitleInFirestore(title) {
     const start = performance.now();
     const searchResult = await db.collection('posts').where('searchIndex', 'array-contains-any', query11).get();
     const end = performance.now();
-    toast(`Succesfuly searched database in ${Math.round(end - start)} milliseconds.`);
+    // toast(`Succesfuly searched database in ${Math.round(end - start)} milliseconds.`);
 
     // Save the result in the local storage and add a timestamp
     localStorage.setItem(title, JSON.stringify(searchResult.docs.map(doc => ({ id: doc.id, ...doc.data() }))));

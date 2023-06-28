@@ -47,6 +47,8 @@ function addPost() {
 
     }
 
+    post = createVideoTagsFromString(post);
+
 
     let date = new Date();
     let tagsA = words;
@@ -256,6 +258,34 @@ function toggleContentVisibility() {
 function tokenizeSearchableText(text) {
     return text.toLowerCase().split(/\s+/).filter(word => word.length > 2);
 }
+
+function createVideoTagsFromString(inputString) {
+    // Regular expression to match video links
+    const videoRegex = /(https?:\/\/[^\s]+?\.(mp4|webm))|ipfs:\/\/[^\s]+/gi;
+
+    // Find all video links in the input string
+    const videoLinks = inputString.match(videoRegex);
+
+    if (!videoLinks) {
+        console.log('No video links found.');
+        return inputString;
+    }
+
+    let outputString = inputString;
+
+    // Iterate through the video links
+    videoLinks.forEach((videoLink) => {
+        // Create a video tag for each video link
+        const videoTag = `<video class="plyr__video-embed" controls crossorigin="anonymous"><source src="${videoLink}"></video>`;
+
+        // Replace the video link in the output string with the video tag
+        outputString = outputString.replace(videoLink, videoTag);
+    });
+
+    return outputString;
+}
+
+
 
 // Listen for changes in the editor's modes and update the content visibility accordingly
 setInterval(toggleContentVisibility, 200);
