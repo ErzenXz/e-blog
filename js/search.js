@@ -35,3 +35,11 @@ async function searchTitleInFirestore(title) {
 
     return searchResult.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
+
+
+// Plyr.io initialization
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize Plyr for all video elements with class "plyr__video-embed"
+    const players = Plyr.setup('.plyr__video-embed');
+});

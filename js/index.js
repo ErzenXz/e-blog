@@ -429,7 +429,7 @@ function createPost(key, title, description, tags, date, dateF, image, mini, vie
   `;
 
   const button = document.createElement("button");
-  button.href = "#";
+  button.href = "/?/post/" + key;
   button.className = "button";
   // button.setAttribute(
   //   "onclick",
@@ -443,7 +443,14 @@ function createPost(key, title, description, tags, date, dateF, image, mini, vie
 
   button.textContent = loadMoreText;
 
-  div.querySelector(".article-footer").appendChild(button);
+  const link = document.createElement("a");
+  link.href = "/?/post/" + key;
+  link.className = "button";
+  link.textContent = loadMoreText;
+
+
+
+  div.querySelector(".article-footer").appendChild(link);
 
   BLOGS.appendChild(div);
 }
@@ -589,7 +596,7 @@ function viewPost(post) {
   let image = post.image;
   let views = post.views;
 
-  document.title = title;
+  document.title = title + " • " + blogTitle;
 
   document.getElementById("demo").value = description;
 
@@ -1087,6 +1094,8 @@ function getPost(key) {
 
       // Add a new entry to the browser history
       window.history.pushState({ post: key }, "", "?/post/" + key);
+
+      // const players = Plyr.setup('.plyr__video-embed');
 
       setTimeout(function () {
         let postId = key;

@@ -135,7 +135,7 @@ article img {
     order: 2;
 }
 
-.button {
+/* .button {
     width: fit-content;
     min-width: 100px;
     height: 45px;
@@ -159,11 +159,46 @@ article img {
     transform: scale(0.95);
 }
 
-/* Example Usage */
+
 .button-container {
     text-align: center;
     margin-top: 20px;
 }
+
+.button a {
+    text-decoration: none !important;
+    color: #000 !important;
+} */
+
+.button {
+    width: fit-content;
+    min-width: 70px;
+    height: 35px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    border: 2px solid #E0E1E4;
+    box-shadow: 0px 0px 20px -20px;
+    cursor: pointer;
+    background-color: white;
+    transition: all 0.2s ease-in-out 0ms;
+    user-select: none;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none !important;
+    color: #000 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button:hover {
+    background-color: #F2F2F2;
+    box-shadow: 0px 0px 20px -18px;
+}
+
+.button:active {
+    transform: scale(0.95);
+}
+
 
 
 footer {
@@ -849,9 +884,6 @@ article details:hover {
     color: #ff0000;
 }
 
-#footer {
-    cursor: pointer;
-}
 
 /* Apply cool outline style to focused elements */
 :focus {
@@ -870,7 +902,11 @@ article details:hover {
 
 video {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: cover;
     border-radius: 4px;
+}
+
+#container .item {
+    height: fit-content;
 }

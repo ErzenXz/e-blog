@@ -259,9 +259,73 @@ function tokenizeSearchableText(text) {
     return text.toLowerCase().split(/\s+/).filter(word => word.length > 2);
 }
 
+// function createVideoTagsFromString(inputString) {
+//     // Regular expression to match video links
+//     const videoRegex = /(https?:\/\/[^\s]+?\.(mp4|webm))|ipfs:\/\/[^\s]+/gi;
+
+//     // Find all video links in the input string
+//     const videoLinks = inputString.match(videoRegex);
+
+//     if (!videoLinks) {
+//         console.log('No video links found.');
+//         return inputString;
+//     }
+
+//     let outputString = inputString;
+
+//     // Iterate through the video links
+//     videoLinks.forEach((videoLink) => {
+//         // Create a video tag for each video link
+//         const videoTag = `<video class="plyr__video-embed" controls crossorigin="anonymous"><source src="${videoLink}"></video>`;
+
+//         // Replace the video link in the output string with the video tag
+//         outputString = outputString.replace(videoLink, videoTag);
+//     });
+
+//     return outputString;
+// }
+
+// function createVideoTagsFromString(inputString) {
+//     // Regular expression to match video links (including IPFS)
+//     const videoRegex = /(https?:\/\/[^\s]+?\.(mp4|webm))|(https?:\/\/ipfs\.io\/ipfs\/[^\s]+)/gi;
+
+//     // Find all video links in the input string
+//     const videoLinks = inputString.match(videoRegex);
+
+//     if (!videoLinks) {
+//         console.log('No video links found.');
+//         return inputString;
+//     }
+
+//     let outputString = inputString;
+
+//     // Iterate through the video links
+//     videoLinks.forEach((videoLink) => {
+//         // Check if the link is an IPFS link
+//         if (videoLink.startsWith('https://ipfs.io/ipfs/')) {
+//             // Extract the IPFS hash from the link
+//             const ipfsHash = videoLink.replace('https://ipfs.io/ipfs/', '');
+
+//             // Create an IPFS video tag
+//             const ipfsTag = `<video class="plyr__video-embed" controls crossorigin="anonymous"><source src="https://ipfs.io/ipfs/${ipfsHash}"></video>`;
+
+//             // Replace the IPFS link in the output string with the IPFS video tag
+//             outputString = outputString.replace(videoLink, ipfsTag);
+//         } else {
+//             // Create a video tag for regular video links
+//             const videoTag = `<video class="plyr__video-embed" controls crossorigin="anonymous"><source src="${videoLink}"></video>`;
+
+//             // Replace the video link in the output string with the video tag
+//             outputString = outputString.replace(videoLink, videoTag);
+//         }
+//     });
+
+//     return outputString;
+// }
+
 function createVideoTagsFromString(inputString) {
-    // Regular expression to match video links
-    const videoRegex = /(https?:\/\/[^\s]+?\.(mp4|webm))|ipfs:\/\/[^\s]+/gi;
+    // Regular expression to match video links (including YouTube and IPFS)
+    const videoRegex = /(https?:\/\/[^\s]+?\.(mp4|webm))|(https?:\/\/ipfs\.io\/ipfs\/[^\s]+)|(https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([^\s&]+))/gi;
 
     // Find all video links in the input string
     const videoLinks = inputString.match(videoRegex);
@@ -275,16 +339,36 @@ function createVideoTagsFromString(inputString) {
 
     // Iterate through the video links
     videoLinks.forEach((videoLink) => {
-        // Create a video tag for each video link
-        const videoTag = `<video class="plyr__video-embed" controls crossorigin="anonymous"><source src="${videoLink}"></video>`;
+        // Check if the link is a YouTube link
+        if (videoLink.includes('youtube.com/watch')) {
+            // Extract the YouTube video ID from the link
+            const videoId = videoLink.match(/(?:\?v=|\/embed\/|\/youtu\.be\/|\/v\/|\/e\/|\/watch\?v=)([^#\&\?]*).*/)[1];
 
-        // Replace the video link in the output string with the video tag
-        outputString = outputString.replace(videoLink, videoTag);
+            // Create a YouTube video embed tag
+            const youtubeTag = `<div class="plyr__video-embed"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></div>`;
+
+            // Replace the YouTube link in the output string with the YouTube video tag
+            outputString = outputString.replace(videoLink, youtubeTag);
+        } else if (videoLink.startsWith('https://ipfs.io/ipfs/')) {
+            // Extract the IPFS hash from the link
+            const ipfsHash = videoLink.replace('https://ipfs.io/ipfs/', '');
+
+            // Create an IPFS video tag
+            const ipfsTag = `<video class="plyr__video-embed" controls crossorigin="anonymous"><source src="https://ipfs.io/ipfs/${ipfsHash}"></video>`;
+
+            // Replace the IPFS link in the output string with the IPFS video tag
+            outputString = outputString.replace(videoLink, ipfsTag);
+        } else {
+            // Create a video tag for regular video links
+            const videoTag = `<video class="plyr__video-embed" controls crossorigin="anonymous"><source src="${videoLink}"></video>`;
+
+            // Replace the video link in the output string with the video tag
+            outputString = outputString.replace(videoLink, videoTag);
+        }
     });
 
     return outputString;
 }
-
 
 
 // Listen for changes in the editor's modes and update the content visibility accordingly
